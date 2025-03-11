@@ -1,6 +1,11 @@
-# Ignore .env files
+# Ignore environment variables
 .env
 
 # Ignore Firebase credentials
 firebase-key.json
 
+# Ignore Excel files
+*.xlsx
+
+# Ignore the QR code folder
+qr_codes/
