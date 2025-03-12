@@ -47,6 +47,7 @@ Before running the script, ensure you have the following installed:
 │── students.xlsx             # Excel file containing student data
 │── generate_qr_code.py       # The main Python script
 │── qr_codes/                 # Directory to store generated QR codes
+│── activity_logs/            # Directory to store activity logs 
 ```
 
 ## Excel File Format (`students.xlsx`)
