@@ -12,11 +12,12 @@ Before running the script, ensure you have the following installed:
   - `firebase-admin` (for Firebase authentication and Firestore access)
   - `python-dotenv` (for managing environment variables)
   - `cloudinary` (for uploading images to Cloudinary)
+  - `Pillow` (for image manipulation, such as adding text below the QR code)
 
 ## Installation
 1. Install the required libraries using pip:
    ```sh
-   pip install qrcode openpyxl firebase-admin python-dotenv cloudinary
+   pip install qrcode openpyxl firebase-admin python-dotenv cloudinary Pillow
    ```
 
 2. Set up Firebase:
@@ -59,9 +60,11 @@ The Excel file should have the following columns:
 ## How It Works
 1. The script reads student data from `students.xlsx`.
 2. It generates a unique QR code for each student containing their details.
-3. Each QR code is saved as a PNG file inside the `qr_codes/` folder.
-4. The QR code is uploaded to Cloudinary.
-5. The Firebase Firestore database is updated with the QR code URL and student details.
+3. The student's name is added below the QR code using the `Pillow` library.
+4. Each QR code is saved as a PNG file inside the `qr_codes/` folder.
+5. The QR code is uploaded to Cloudinary.
+6. The Firebase Firestore database is updated with the QR code URL and student details.
+7. Parent data is also uploaded to Firebase, linking parents to their children.
 
 ## Running the Script
 To execute the script, run:
@@ -72,6 +75,7 @@ python generate_qr_code.py
 ## Expected Output
 - QR codes are saved inside the `qr_codes/` folder as `<student_id>_qr.png`.
 - QR codes are uploaded to Cloudinary, and their URLs are stored in Firebase Firestore.
+- Parents data is linked to their children in Firebase.
 - The script prints messages confirming QR code generation, Cloudinary uploads, and Firebase updates.
 
 ## Troubleshooting
@@ -80,12 +84,14 @@ python generate_qr_code.py
 - Verify that the required libraries are installed using `pip list`.
 - Ensure `students.xlsx` follows the correct format.
 - If QR codes are not being generated, check for missing or incorrectly formatted data in the Excel file.
+- If the font for the student's name below the QR code is not found, the script will fall back to the default font.
 
 ## Future Improvements
 - Implement logging for better debugging and tracking.
 - Improve error handling and retry mechanisms.
 - Add a graphical user interface (GUI) for easier use.
 - Optimize QR code storage and retrieval in Firebase.
+- Add support for custom fonts and additional text formatting below the QR code.
 
 ## `.gitignore` File
 To prevent sensitive files from being uploaded to GitHub, create a `.gitignore` file with the following content:
