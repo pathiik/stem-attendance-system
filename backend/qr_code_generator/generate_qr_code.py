@@ -75,8 +75,43 @@ def upload_student_data(students):
             doc_ref = db.collection('students').document(str(student['student_id']))
             doc_ref.set(student)
             print(f"Uploaded student data for student ID: {student['student_id']}")
+            upload_parent_data(student)
     except Exception as e:
         print(f"Error uploading student data to Firebase: {e}")
+
+# Function to upload parent data to Firebase
+def upload_parent_data(student):
+    try:
+        db = firestore.client()
+        parent_email = student['parent_email']
+        parent_ref = db.collection('parents').document(parent_email)
+        parent_doc = parent_ref.get()
+
+        if parent_doc.exists:
+            parent_data = parent_doc.to_dict()
+            children = parent_data.get('children', [])
+            if student['student_id'] not in [child['student_id'] for child in children]:
+                children.append({
+                    'student_id': student['student_id'],
+                    'name': student['name']
+                    })
+                parent_ref.update({
+                    'children': children
+                    })
+        else:
+            parent_data = {
+                'parent_name': student['parent_name'],
+                'parent_phone': student['parent_phone'],
+                'parent_email': student['parent_email'],
+                'children': [{
+                    'student_id': student['student_id'],
+                    'name': student['name']
+                    }]
+            }
+            parent_ref.set(parent_data)
+        print(f"Uploaded parent data for parent email: {parent_email}")
+    except Exception as e:
+        print(f"Error uploading parent data to Firebase: {e}")
 
 # Function to generate QR Code and save it locally
 # Generates a QR Code from the student data and saves it as a PNG file locally
