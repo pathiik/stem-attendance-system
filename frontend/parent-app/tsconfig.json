@@ -7,7 +7,7 @@
       "@/*": ["./*"]
     },
     "baseUrl": ".",
-    "skipLibCheck": true // Add this to skip library checks for Firebase
+    "skipLibCheck": true // Added this to skip library checks for Firebase
   },
   "include": [
     "**/*.ts",

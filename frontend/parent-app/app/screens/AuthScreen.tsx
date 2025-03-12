@@ -19,6 +19,7 @@ export default function AuthScreen() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const insets = useSafeAreaInsets();
 
+  // Clearing the error message after 5 seconds
   useEffect(() => {
     if (error) {
       const timer = setTimeout(() => {
@@ -28,6 +29,7 @@ export default function AuthScreen() {
     }
   }, [error]);
 
+  // Function to handle login and signup
   const handleAuth = async () => {
     if (activeTab === 'signup' && password !== confirmPassword) {
       setError('Passwords do not match');
@@ -38,23 +40,23 @@ export default function AuthScreen() {
       if (activeTab === 'login') {
         // Login logic
         await signInWithEmailAndPassword(auth, email, password);
-        router.replace('/'); // Navigate to the home screen after login
+        router.replace('/'); // Navigating to the home screen after login
       } else {
         // Signup logic
-        // Check if the email exists in the "parents" collection
+        // Checking if the email exists in the "parents" collection
         const parentsRef = collection(db, 'parents');
         const q = query(parentsRef, where('parent_email', '==', email));
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
-          // Email does not exist in Firestore
+          // If email does not exist in Firestore
           setError('Email is not registered as a parent.');
           return;
         }
 
-        // Email exists in Firestore, proceed with account creation
+        // If email exists in Firestore, creating an account
         await createUserWithEmailAndPassword(auth, email, password);
-        router.replace('/'); // Navigate to the home screen after signup
+        router.replace('/'); // Navigating to the home screen after signup
       }
     } catch (err) {
       setError(activeTab === 'login' ? 'Invalid email or password' : 'Failed to create account');
