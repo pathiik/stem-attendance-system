@@ -172,28 +172,7 @@ def upload_to_cloudinary(file_path):
     except Exception as e:
         print(f"Error uploading to Cloudinary: {e}")
         return None
-
-def generate_qr_code(data, filename, student_name):
-    try: 
-        qr= qr.code.QRcode(
-            version= 1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size= 10, 
-            border=4,
-        )
-        qr.add_data(data)
-        qr.make(fit=True)
-        img = qr.make_image(fill_color="black", back_color="white")
-        img = img.convert("RGB")
-
-qr_with_text = Image.new("RGB", (img.width, img.height + 50), "white")
-qr_with_text/paste(img, (0,0))
-draw = ImageDraw.Draw(qr_with_text)
-font = ImageFont.load_default()
-text = f"Name: {student_name}"
-text_width, text_height = draw.textsize(text, font=font)
-draw.text(((img.width - text_width) //2, img.height + 10), text, font=font, fill="black")
- 
+        
 # Function to update Firebase with QR Code URL
 # Updates Firebase Firestore with the QR Code URL for the specified student ID
 def update_firebase(qr_url, student_id):
