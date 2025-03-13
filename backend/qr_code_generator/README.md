@@ -1,7 +1,7 @@
 # QR Code Generation Script
 
 ## Overview
-This script generates QR codes for students based on data from an Excel file, uploads the QR codes to Cloudinary, and updates a Firebase Firestore database with the QR code URLs. The QR codes contain student details and are stored in a designated folder before being uploaded.
+This script generates QR codes for students based on data from an Excel file, uploads the QR codes to Cloudinary, and updates a Firebase Firestore database with the QR code URLs. The QR codes contain student details and are stored in a designated folder before being uploaded. Additionally, the script logs student activities (e.g., check-in/check-out) and updates their status in Firebase.
 
 ## Prerequisites
 Before running the script, ensure you have the following installed:
@@ -47,7 +47,6 @@ Before running the script, ensure you have the following installed:
 │── students.xlsx             # Excel file containing student data
 │── generate_qr_code.py       # The main Python script
 │── qr_codes/                 # Directory to store generated QR codes
-│── activity_logs/            # Directory to store activity logs 
 ```
 
 ## Excel File Format (`students.xlsx`)
@@ -65,6 +64,7 @@ The Excel file should have the following columns:
 5. The QR code is uploaded to Cloudinary.
 6. The Firebase Firestore database is updated with the QR code URL and student details.
 7. Parent data is also uploaded to Firebase, linking parents to their children.
+8. Student activities (e.g., check-in/check-out) are logged in Firebase with timestamps, and their status is updated accordingly.
 
 ## Running the Script
 To execute the script, run:
@@ -76,6 +76,7 @@ python generate_qr_code.py
 - QR codes are saved inside the `qr_codes/` folder as `<student_id>_qr.png`.
 - QR codes are uploaded to Cloudinary, and their URLs are stored in Firebase Firestore.
 - Parents data is linked to their children in Firebase.
+- Student activities are logged in Firebase, and their status is updated.
 - The script prints messages confirming QR code generation, Cloudinary uploads, and Firebase updates.
 
 ## Troubleshooting
@@ -92,6 +93,7 @@ python generate_qr_code.py
 - Add a graphical user interface (GUI) for easier use.
 - Optimize QR code storage and retrieval in Firebase.
 - Add support for custom fonts and additional text formatting below the QR code.
+- Enhance activity logging with additional details (e.g., location, device used).
 
 ## `.gitignore` File
 To prevent sensitive files from being uploaded to GitHub, create a `.gitignore` file with the following content:

@@ -1,4 +1,3 @@
-# QR Code Generator
 import qrcode
 import openpyxl
 import firebase_admin
@@ -7,7 +6,8 @@ import os
 from dotenv import load_dotenv
 import cloudinary
 import cloudinary.uploader
-from PIL import Image, ImageDraw, ImageFont  # Importing PIL for image manipulation
+from PIL import Image, ImageDraw, ImageFont
+from datetime import datetime
 
 # Loading environment variables
 load_dotenv()
@@ -40,7 +40,7 @@ def read_student_data(file_path):
         workbook = openpyxl.load_workbook(file_path)
         sheet = workbook.active
         students = []
-        for row in sheet.iter_rows(min_row=2, values_only=True): # Skipping the header row
+        for row in sheet.iter_rows(min_row=2, values_only=True): # Skipping header row
             if len(row) < 13:
                 continue
             student = {
@@ -56,7 +56,8 @@ def read_student_data(file_path):
                 'emergency_contact_name': row[9],
                 'emergency_contact_phone': row[10],
                 'emergency_contact_email': row[11],
-                'id_expiry_date': row[12]
+                'id_expiry_date': row[12],
+                'status': 'Absent'  # Default status set to 'Absent'
             }
             students.append(student)
         return students
@@ -75,7 +76,7 @@ def upload_student_data(students):
                 doc_ref.set(student)
                 upload_parent_data(student)
     except Exception as e:
-        pass
+        print(f"Error uploading student data: {e}")
 
 # Function to upload parent data to Firebase
 # Uploads the parent date and the children associated with the parent to Firebase Firestore
@@ -109,6 +110,39 @@ def upload_parent_data(student):
     except Exception as e:
         pass
 
+# Function to log student activity
+# Logs student activity (e.g., check-in, check-out) with a timestamp
+def log_activity(student_id, name, activity_type):
+    try:
+        db = firestore.client()
+        
+        # Validating activity_type
+        if activity_type not in ["Check-in", "Check-out"]:
+            raise ValueError(f"Invalid activity_type: {activity_type}. Must be 'Check-in' or 'Check-out'.")
+        
+        # Logging the activity in the 'attendance_logs' collection
+        log_data = {
+            'name': name,
+            'timestamp': datetime.now(),
+            'activity_type': activity_type,
+        }
+        db.collection('attendance_logs').document(str(student_id)).set(log_data, merge=True)
+        
+        # Updating the student's status in the 'students' collection
+        status = "Present" if activity_type == "Check-in" else "Absent"
+        student_ref = db.collection('students').document(str(student_id))
+        
+        # Checking if the student document exists before updating
+        if student_ref.get().exists:
+            # Using merge=True to preserve existing fields
+            student_ref.set({'status': status}, merge=True)
+        else:
+            print(f"Warning: Student document for student_id {student_id} does not exist.")
+    except ValueError as ve:
+        print(f"Validation error: {ve}")
+    except Exception as e:
+        print(f"Error logging activity for student_id {student_id}: {e}")
+
 # Function to generate QR Code and save it locally
 # Generates a QR Code from the student data and saves it as a PNG file locally
 # Adds the student's name below the QR Code
@@ -117,21 +151,21 @@ def generate_qr_code(data, filename, student_name):
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=10,
-            border=4,
+            box_size=6,
+            border=2,
         )
         qr.add_data(data)
         qr.make(fit=True)
         img = qr.make_image(fill_color="black", back_color="white")
-        img = img.convert("RGB")  # Convert image to RGB for compatibility with PIL
+        img = img.convert("RGB") # Convert image to RGB for compatibility with PIL
 
         # Creating a new image with space for text below the QR code
         qr_with_text = Image.new("RGB", (img.width, img.height + 70), "white")
-        qr_with_text.paste(img, (0, 0))  # Pasting the QR code onto the new image
+        qr_with_text.paste(img, (0, 0))
 
         # Drawing the student's name below the QR code
         draw = ImageDraw.Draw(qr_with_text)
-
+        
         try:
             # Using 'arial.ttf' font if available
             font = ImageFont.truetype("arial.ttf", 28)
@@ -139,30 +173,31 @@ def generate_qr_code(data, filename, student_name):
             # Fallback to default font if the specified font is not available
             font = ImageFont.load_default()
             print("Warning: Custom font not found. Using default font.")
-
+        
         text = f"Name: {student_name}"
 
         text_bbox = draw.textbbox((0, 0), text, font=font)
         text_width = text_bbox[2] - text_bbox[0]
-        text_height = text_bbox[3] - text_bbox[1]  
 
         # Drawing the text centered below the QR code
         draw.text(
-            ((img.width - text_width) // 2, img.height + 20),  # Adjusted vertical position
+            ((img.width - text_width) // 2, img.height + 20),
             text,
             font=font,
             fill="black"
         )
-
+        
         # Creating a QR Code folder if it doesn't exist
         os.makedirs(QR_FOLDER_PATH, exist_ok=True)
         file_path = os.path.join(QR_FOLDER_PATH, filename)
-        qr_with_text.save(file_path)  # Save the new image with the QR code and text
+
+        # Saving the new image with the QR code and text, reducing the quality to 75% for better optimization
+        qr_with_text.save(file_path, quality=75) 
         return file_path
     except Exception as e:
         print(f"Error generating QR code: {e}")
         return None
-
+    
 # Function to upload QR Code to Cloudinary
 # Uploads the QR Code to Cloudinary and returns the public URL
 def upload_to_cloudinary(file_path):
@@ -213,6 +248,7 @@ def main():
         Emergency Contact Phone: {student['emergency_contact_phone']}
         Emergency Contact Email: {student['emergency_contact_email']}
         ID Expiry Date: {student['id_expiry_date']}
+        Status: {student['status']}
         """
         
         qr_filename = f"{student['student_id']}_qr.png"  # QR Code filename
@@ -229,9 +265,12 @@ def main():
             print(f"Failed to upload QR code for student ID: {student['student_id']}")
             continue
 
+        # Log a check-in activity for the student
+        log_activity(student['student_id'], student['name'], "Check-out")
+
         # Updating Firebase with QR Code URL
         update_firebase(qr_url, student['student_id'])
         print(f"Successfully processed student ID: {student['student_id']}")
-
+        
 if __name__ == "__main__":
     main()
