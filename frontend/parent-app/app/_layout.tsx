@@ -12,7 +12,7 @@ export default function RootLayout() {
         />
         <Stack.Screen
           name="index"
-          options={{ title: "Attendance App (Parents)" }}
+          options={{ title: "Attendance App (Parents)", headerShown: false }}
         />
       </Stack>
     </SafeAreaProvider>
