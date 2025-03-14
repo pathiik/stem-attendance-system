@@ -165,7 +165,7 @@ export default function AuthScreen() {
 
       {/* Login/Signup Button */}
       <TouchableOpacity
-        className="w-full bg-primary p-3 rounded-lg items-center"
+        className="w-full bg-primary p-4 rounded-lg items-center"
         onPress={handleAuth}
       >
         <Text className="text-white text-lg font-semibold">
