@@ -14,6 +14,10 @@ export default function RootLayout() {
           name="index"
           options={{ title: "Attendance App (Parents)", headerShown: false }}
         />
+        <Stack.Screen
+          name="screens/StudentDetailsScreen"
+          options={{ title: "Student Details" }}
+        />
       </Stack>
     </SafeAreaProvider>
   );
