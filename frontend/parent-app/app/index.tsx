@@ -333,7 +333,7 @@ export default function Index() {
                         color="#1d2951"
                       />
                       <Text
-                        className="text-sm text-gray-600 ml-2"
+                        className="text-sm text-gray-600"
                         numberOfLines={1}
                       >
                         {student.address}
