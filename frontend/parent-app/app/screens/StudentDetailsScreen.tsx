@@ -69,7 +69,10 @@ export default function StudentDetailsScreen() {
 
         {/* Student Name and Status Section */}
         <View className="mt-2 items-center">
-          <Text className="text-2xl font-bold text-primary uppercase tracking-wide">
+          <Text
+            className="text-2xl text-center font-bold text-primary uppercase tracking-wide"
+            numberOfLines={2}
+          >
             {studentDetails.name}
           </Text>
           {/* Student ID */}
@@ -100,7 +103,7 @@ export default function StudentDetailsScreen() {
       </View>
 
       {/* Student Details */}
-      <ScrollView className="flex-1 px-5 py-7">
+      <ScrollView className="flex-1 px-5 py-7 mb-4">
         {/* Student Details Card */}
         <View className="bg-white px-5 py-4 rounded-lg mb-4 shadow-2xl">
           {/* Age and Date of Birth Section */}
@@ -125,7 +128,7 @@ export default function StudentDetailsScreen() {
           {/* Location Section */}
           <View className="flex-row justify-center items-center mt-4 gap-1">
             <MaterialIcons name="location-on" size={20} color="#1d2951" />
-            <Text className="text-lg text-gray-600">
+            <Text className="text-lg text-gray-600" numberOfLines={1}>
               {studentDetails.address}
             </Text>
           </View>
@@ -140,7 +143,10 @@ export default function StudentDetailsScreen() {
                 <MaterialIcons name="group" size={60} color="#1d2951" />
               </View>
               <View className="w-2/3">
-                <Text className="text-xl font-bold text-primary">
+                <Text
+                  className="text-xl font-bold text-primary"
+                  numberOfLines={2}
+                >
                   {studentDetails.parent_name}
                 </Text>
                 <View className="mt-2 space-y-1">
@@ -152,7 +158,7 @@ export default function StudentDetailsScreen() {
                   </View>
                   <View className="flex-row items-center gap-1">
                     <MaterialIcons name="email" size={16} color="#1d2951" />
-                    <Text className="text-lg text-gray-600">
+                    <Text className="text-lg text-gray-600" numberOfLines={2}>
                       {studentDetails.parent_email}
                     </Text>
                   </View>
@@ -200,7 +206,10 @@ export default function StudentDetailsScreen() {
                   <MaterialIcons name="emergency" size={60} color="#1d2951" />
                 </View>
                 <View className="w-2/3">
-                  <Text className="text-xl font-bold text-primary">
+                  <Text
+                    className="text-xl font-bold text-primary"
+                    numberOfLines={2}
+                  >
                     {studentDetails.emergency_contact_name}
                   </Text>
                   <View className="mt-2 space-y-1">
@@ -212,7 +221,7 @@ export default function StudentDetailsScreen() {
                     </View>
                     <View className="flex-row items-center gap-1">
                       <MaterialIcons name="email" size={16} color="#1d2951" />
-                      <Text className="text-lg text-gray-600">
+                      <Text className="text-lg text-gray-600" numberOfLines={2}>
                         {studentDetails.emergency_contact_email}
                       </Text>
                     </View>

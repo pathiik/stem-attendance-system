@@ -118,7 +118,8 @@ export default function Index() {
         const unsubscribeParent = onSnapshot(parentDocRef, (parentDocSnap) => {
           if (parentDocSnap.exists()) {
             const parentData = parentDocSnap.data();
-            setParentName(parentData.parent_name || "Parent");
+            const firstName = parentData.parent_name.split(" ")[0];
+            setParentName(firstName || "Parent");
 
             if (Array.isArray(parentData.children)) {
               // Setting up listeners for each student document
@@ -290,7 +291,11 @@ export default function Index() {
                   <View className="ml-4 flex-1">
                     {/* Student Name and Status Text */}
                     <View className="flex-row justify-between items-center">
-                      <Text className="text-xl font-bold text-primary uppercase tracking-wide">
+                      <Text
+                        className="text-xl font-bold text-primary uppercase tracking-wide"
+                        numberOfLines={2}
+                        style={{ width: "70%" }}
+                      >
                         {student.name}
                       </Text>
                       {/* Status Text */}
