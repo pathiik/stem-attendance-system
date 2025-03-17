@@ -172,6 +172,21 @@ export default function AuthScreen() {
           {activeTab === "login" ? "Login" : "Signup"}
         </Text>
       </TouchableOpacity>
+
+      {/* Note for parents (visible only in signup tab) */}
+      {activeTab === "signup" && (
+        <View className="flex-row bg-blue-50 rounded-lg p-3 mt-4 items-center gap-2">
+          <MaterialIcons
+            name="info"
+            size={20}
+            color="#3b82f6"
+            style={{ opacity: 0.6}}
+          />
+          <Text className="text-sm text-gray-500" style={{ opacity: 0.6 }}>
+            Please use the same email address you used to register your child.
+          </Text>
+        </View>
+      )}
     </View>
   );
 }
