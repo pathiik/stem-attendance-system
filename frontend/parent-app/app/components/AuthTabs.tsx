@@ -1,4 +1,3 @@
-// app/components/AuthTabs.tsx
 import { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 
