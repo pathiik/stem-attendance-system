@@ -8,11 +8,12 @@ The Attendance App (for scanner) is a mobile application designed for teachers (
 
 - `nativewind tailwindcss` - Tailwind CSS for styling
 - `react-native-safe-area-context` - Ensures safe UI placement
+- `expo-linear-gradient` - Gradient backgrounds
 
 ### Install via npm
 
 ```bash
-npm install nativewind tailwindcss react-native-safe-area-context
+npm install nativewind tailwindcss react-native-safe-area-context expo-linear-gradient
 ```
 
 ## 📂 Folder Structure
