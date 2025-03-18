@@ -1,50 +1,74 @@
-# Welcome to your Expo app 👋
+# STEM ATTENDANCE APP (SCANNER)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## 📌 Project Overview
 
-## Get started
+The Attendance App (for scanner) is a mobile application designed for teachers (or authorized indivuals) to scan student QR codes and mark attendance. Built using **Expo** and **React Native**, the app integrates with **Firebase** for database.
 
-1. Install dependencies
+## 📦 Dependencies Used
 
-   ```bash
-   npm install
-   ```
+- `nativewind tailwindcss` - Tailwind CSS for styling
+- `react-native-safe-area-context` - Ensures safe UI placement
 
-2. Start the app
-
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+### Install via npm
 
 ```bash
-npm run reset-project
+npm install nativewind tailwindcss react-native-safe-area-context
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 📂 Folder Structure
 
-## Learn more
+```
+/scanner-app
+│── .expo/                   # Expo development files
+│── app/                     # Main application code
+│   ├── globals.css          # Tailwind CSS global styles
+│   ├── _layout.tsx          # Root layout and navigation setup
+│   └── index.tsx            # Main entry point
+│── assets/                  # Static assets (e.g., images, icons)
+│── node_modules/            # Project dependencies
+│── .gitignore               # Files and folders to ignore in Git
+│── FirebaseConfig.js        # Firebase configuration
+│── metro.config.js          # Metro bundler configuration
+│── babel.config.js          # Babel configuration
+│── package.json             # Project dependencies and scripts
+│── tailwind.config.js       # Tailwind CSS configuration
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+## 🛠️ Installation & Setup
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### 1️⃣ Prerequisites
 
-## Join the community
+Ensure you have the following installed:
 
-Join our community of developers creating universal apps.
+- **Node.js** (Recommended: LTS version) ➜ Download here: [Node.js](https://nodejs.org/)
+- **Expo CLI** ➜ Install globally using:
+  ```bash
+  npm install -g expo-cli
+  ```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### 2️⃣ Install Dependencies
+
+Navigate to the `scanner-app` folder and install the required dependencies:
+
+```bash
+npm install
+```
+
+Install other required dependencies:
+
+```bash
+npm install nativewind tailwindcss react-native-safe-area-context
+```
+
+### 3️⃣ Start the App
+
+Run the Expo development server:
+
+```bash
+npx expo start
+```
+
+### 4️ Test on Expo Go
+
+- **On Android:** Scan the QR code using the Expo Go app.
+- **On iOS:** Use the Camera app to scan the QR code.
