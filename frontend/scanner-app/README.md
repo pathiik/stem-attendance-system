@@ -27,7 +27,6 @@ npm install nativewind tailwindcss react-native-safe-area-context
 │── assets/                  # Static assets (e.g., images, icons)
 │── node_modules/            # Project dependencies
 │── .gitignore               # Files and folders to ignore in Git
-│── FirebaseConfig.js        # Firebase configuration
 │── metro.config.js          # Metro bundler configuration
 │── babel.config.js          # Babel configuration
 │── package.json             # Project dependencies and scripts
