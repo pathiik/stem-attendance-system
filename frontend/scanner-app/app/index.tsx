@@ -166,8 +166,19 @@ export default function Index() {
           className="flex-row justify-center items-center mt-10"
           style={{ gap: 50 }}
         >
-          <FunctionButton text="Sign In" icon="login" color="green" />
-          <FunctionButton text="Sign Out" icon="logout" color="red" />
+          {/* FunctionButton components passing the action prop determining the action to be performed on button press (either sign-in or sign-out) */}
+          <FunctionButton
+            text="Sign In"
+            icon="login"
+            color="green"
+            action="sign-in"
+          />
+          <FunctionButton
+            text="Sign Out"
+            icon="logout"
+            color="red"
+            action="sign-out"
+          />
         </View>
         <Text></Text>
       </View>

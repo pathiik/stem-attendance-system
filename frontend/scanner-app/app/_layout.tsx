@@ -10,6 +10,10 @@ export default function RootLayout() {
           name="index"
           options={{ title: "Attendance App (Scanner)", headerShown: false }}
         />
+        <Stack.Screen
+          name="screens/ScanScreen"
+          options={{ title: "QR Code Scanner", headerShown: false }}
+        />
       </Stack>
     </SafeAreaProvider>
   );

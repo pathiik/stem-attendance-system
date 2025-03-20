@@ -8,12 +8,15 @@ The Attendance App (for scanner) is a mobile application designed for teachers (
 
 - `nativewind tailwindcss` - Tailwind CSS for styling
 - `react-native-safe-area-context` - Ensures safe UI placement
+- `react-native-reanimated` - Animated transitions
 - `expo-linear-gradient` - Gradient backgrounds
+- `expo-camera` - Camera access for scanning QR codes
+- `expo-dev-client` - Expo development client (only for testing CameraView)
 
 ### Install via npm
 
 ```bash
-npm install nativewind tailwindcss react-native-safe-area-context expo-linear-gradient
+npm install nativewind tailwindcss react-native-safe-area-context react-native-reanimated expo-linear-gradient expo-camera
 ```
 
 ## 📂 Folder Structure
@@ -22,6 +25,8 @@ npm install nativewind tailwindcss react-native-safe-area-context expo-linear-gr
 /scanner-app
 │── .expo/                   # Expo development files
 │── app/                     # Main application code
+│   ├── components/          # Reuasble react components
+│   ├── screens/             # Application screens
 │   ├── globals.css          # Tailwind CSS global styles
 │   ├── _layout.tsx          # Root layout and navigation setup
 │   └── index.tsx            # Main entry point
@@ -57,7 +62,7 @@ npm install
 Install other required dependencies:
 
 ```bash
-npm install nativewind tailwindcss react-native-safe-area-context
+npm install nativewind tailwindcss react-native-safe-area-context react-native-reanimated expo-linear-gradient expo-camera
 ```
 
 ### 3️⃣ Start the App
