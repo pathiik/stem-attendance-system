@@ -12,11 +12,12 @@ The Attendance App (for scanner) is a mobile application designed for teachers (
 - `expo-linear-gradient` - Gradient backgrounds
 - `expo-camera` - Camera access for scanning QR codes
 - `expo-dev-client` - Expo development client (only for testing CameraView)
+- `firebase` - Firebase SDK for database
 
 ### Install via npm
 
 ```bash
-npm install nativewind tailwindcss react-native-safe-area-context react-native-reanimated expo-linear-gradient expo-camera
+npm install nativewind tailwindcss react-native-safe-area-context react-native-reanimated expo-linear-gradient expo-camera firebase
 ```
 
 ## 📂 Folder Structure
@@ -33,6 +34,7 @@ npm install nativewind tailwindcss react-native-safe-area-context react-native-r
 │── assets/                  # Static assets (e.g., images, icons)
 │── node_modules/            # Project dependencies
 │── .gitignore               # Files and folders to ignore in Git
+│── FirebaseConfig.ts        # Firebase configuration
 │── metro.config.js          # Metro bundler configuration
 │── babel.config.js          # Babel configuration
 │── package.json             # Project dependencies and scripts
@@ -50,6 +52,7 @@ Ensure you have the following installed:
   ```bash
   npm install -g expo-cli
   ```
+- **Firebase Project** ➜ Create one at [Firebase Console](https://console.firebase.google.com/)
 
 ### 2️⃣ Install Dependencies
 
@@ -65,7 +68,32 @@ Install other required dependencies:
 npm install nativewind tailwindcss react-native-safe-area-context react-native-reanimated expo-linear-gradient expo-camera
 ```
 
-### 3️⃣ Start the App
+### 3️⃣ Set Up Firebase
+
+- Create a **FirebaseConfig.js** file inside the `scanner-app` if it doesn't exist.
+- Add your Firebase configuration:
+
+```ts
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+
+const firebaseConfig = {
+  apiKey: <"API_KEY">,
+  authDomain: <"AUTH_DOMAIN">,
+  projectId: <"PROJECT_ID">,
+  storageBucket: <"STORAGE_BUCKET">,
+  messagingSenderId: <"MESSAGING_SENDER_ID">,
+  appId: <"APP_ID">,
+  measurementId: <"MEASUREMENT_ID">,
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+export { app, db };
+```
+
+### 4️⃣ Start the App
 
 Run the Expo development server:
 
@@ -73,7 +101,7 @@ Run the Expo development server:
 npx expo start
 ```
 
-### 4️ Test on Expo Go
+### 5️⃣ Test on Expo Go
 
 - **On Android:** Scan the QR code using the Expo Go app.
 - **On iOS:** Use the Camera app to scan the QR code.
