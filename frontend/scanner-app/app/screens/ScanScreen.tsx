@@ -14,6 +14,7 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import CameraOverlay from "../components/CameraOverlay";
 import InCameraButton from "../components/InCameraButton";
+import ScanAlertModal from "../components/ScanAlertModal";
 
 export default function ScanScreen() {
   // Retreiving the action type from the home page (either "sign-in" or "sign-out")
@@ -25,6 +26,7 @@ export default function ScanScreen() {
   const [useStudentID, setUseStudentID] = useState(false);
   const [studentID, setStudentID] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const [alertModalVisible, setAlertModalVisible] = useState(false);
   const router = useRouter();
 
   // Requesting camera permission on mount
@@ -39,13 +41,13 @@ export default function ScanScreen() {
     if (scanned || useStudentID) return; // Prevents multiple scans and disables scanning if using Student ID
 
     setScanned(true);
-    Alert.alert("QR Code Scanned", `Data: ${event.data}`);
+    setAlertModalVisible(true);
 
     setTimeout(() => {
       setScanned(false);
-      Alert.alert("");
+      setAlertModalVisible(false);
       router.back();
-    }, 1000);
+    }, 2000);
   };
 
   const handleUseStudentID = () => {
@@ -59,10 +61,12 @@ export default function ScanScreen() {
       return;
     }
     setModalVisible(false);
-    Alert.alert("Student ID Submitted", `Student ID: ${studentID}`);
+    setAlertModalVisible(true);
+
     setTimeout(() => {
+      setAlertModalVisible(false);
       router.back();
-    }, 1000);
+    }, 2000);
   };
 
   return (
@@ -77,6 +81,7 @@ export default function ScanScreen() {
           }
         >
           <CameraOverlay />
+          {scanned && <ScanAlertModal />}
           <View className="absolute top-10 left-0 right-0 items-center">
             <Text className="text-white text-lg font-bold">
               {action === "sign-in" ? "Scan to Sign In" : "Scan to Sign Out"}
@@ -176,6 +181,9 @@ export default function ScanScreen() {
           </View>
         </View>
       </Modal>
+
+      {/* Alert Modal */}
+      {alertModalVisible && <ScanAlertModal />}
     </View>
   );
 }
