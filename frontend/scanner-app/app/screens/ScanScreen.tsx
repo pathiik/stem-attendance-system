@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Alert, StatusBar } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import CameraOverlay from "../components/CameraOverlay";
 
 export default function ScanScreen() {
   // Retreiving the action type from the home page (either "sign-in" or "sign-out")
@@ -42,6 +43,7 @@ export default function ScanScreen() {
           facing={cameraFace}
           onBarcodeScanned={scanned ? undefined : handleScannedQRCode}
         >
+          <CameraOverlay />
           <View className="absolute top-10 left-0 right-0 items-center">
             <Text className="text-white text-lg font-bold">
               {action === "sign-in" ? "Scan to Sign In" : "Scan to Sign Out"}
