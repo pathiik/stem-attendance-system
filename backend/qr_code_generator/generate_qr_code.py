@@ -235,6 +235,7 @@ def main():
             continue
         
         qr_data = f"""
+        Organization: STEM Canada
         Student ID: {student['student_id']}
         Name: {student['name']}
         Age: {student['age']}
@@ -248,7 +249,6 @@ def main():
         Emergency Contact Phone: {student['emergency_contact_phone']}
         Emergency Contact Email: {student['emergency_contact_email']}
         ID Expiry Date: {student['id_expiry_date']}
-        Status: {student['status']}
         """
         
         qr_filename = f"{student['student_id']}_qr.png"  # QR Code filename
