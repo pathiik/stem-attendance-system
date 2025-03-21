@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, act } from "react";
 import {
   View,
   Text,
@@ -12,6 +12,9 @@ import {
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from "../../FirebaseConfig";
+
 import CameraOverlay from "../components/CameraOverlay";
 import InCameraButton from "../components/InCameraButton";
 import ScanAlertModal from "../components/ScanAlertModal";
@@ -24,10 +27,13 @@ export default function ScanScreen() {
   const [scanned, setScanned] = useState(false);
   const [cameraFace, setCameraFace] = useState<"front" | "back">("back");
   const [useStudentID, setUseStudentID] = useState(false);
-  const [studentID, setStudentID] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [alertModalVisible, setAlertModalVisible] = useState(false);
   const router = useRouter();
+  const [name, setName] = useState("");
+  const [studentID, setStudentID] = useState("");
+  const [currentStatus, setCurrentStatus] = useState("");
+  const [updatedStatus, setUpdatedStatus] = useState("");
 
   // Requesting camera permission on mount
   useEffect(() => {
@@ -37,17 +43,65 @@ export default function ScanScreen() {
   }, [permission]);
 
   // Function to handle the scanned QR code
-  const handleScannedQRCode = (event: { data: string; type: string }) => {
+  const handleScannedQRCode = async (event: { data: string; type: string }) => {
     if (scanned || useStudentID) return; // Prevents multiple scans and disables scanning if using Student ID
 
-    setScanned(true);
-    setAlertModalVisible(true);
+    try {
+      const lines = event.data.split("\n");
+      const qrData: { [key: string]: string } = {};
 
-    setTimeout(() => {
-      setScanned(false);
-      setAlertModalVisible(false);
-      router.back();
-    }, 2000);
+      lines.forEach((line) => {
+        const [key, value] = line.split(":").map((part) => part.trim());
+        if (key && value) {
+          qrData[key] = value;
+        }
+      });
+
+      const requiredFields = ["Student ID", "Name", "Status"];
+      const isValidQRCode = requiredFields.every((field) => qrData[field]);
+
+      if (!isValidQRCode) return;
+
+      const studentID = qrData["Student ID"];
+      const name = qrData["Name"];
+
+      const studentRef = doc(db, "students", studentID);
+      const studentSnap = await getDoc(studentRef);
+
+      if (!studentSnap.exists()) {
+        Alert.alert("Error", "Student not found");
+        return;
+      }
+
+      const studentData = studentSnap.data();
+
+      if (studentData.name !== name) {
+        Alert.alert("Error", "Student name does not match");
+        return;
+      }
+
+      const currentStatus = studentData.status;
+
+      // Determine the new status based on the action and current status
+      let updatedStatus = currentStatus;
+      if (action === "sign-in" && currentStatus === "Absent") {
+        updatedStatus = "Present";
+      } else if (action === "sign-out" && currentStatus === "Present") {
+        updatedStatus = "Absent";
+      }
+
+      // Update the state with the new status
+      setName(name);
+      setStudentID(studentID);
+      setCurrentStatus(currentStatus); // Set the state to the NEW status
+      setUpdatedStatus(updatedStatus); // Set the state to the NEW status
+
+      setScanned(true);
+      setAlertModalVisible(true); // Show the modal AFTER updating the status
+    } catch (error) {
+      console.error("Error parsing QR code data:", error);
+      Alert.alert("Error", "Invalid QR code data");
+    }
   };
 
   const handleUseStudentID = () => {
@@ -55,18 +109,48 @@ export default function ScanScreen() {
     setModalVisible((prev) => !prev);
   };
 
-  const handleSubmitStudentID = () => {
+  const handleSubmitStudentID = async () => {
     if (!studentID.trim()) {
       Alert.alert("Error", "Student ID cannot be empty");
       return;
     }
-    setModalVisible(false);
-    setAlertModalVisible(true);
 
-    setTimeout(() => {
-      setAlertModalVisible(false);
-      router.back();
-    }, 2000);
+    const studentRef = doc(db, "students", studentID);
+    const studentSnap = await getDoc(studentRef);
+
+    if (!studentSnap.exists()) {
+      Alert.alert("Error", "Student not found");
+      return;
+    }
+
+    const studentData = studentSnap.data();
+    const { name, status: currentStatus } = studentData; // Current status from the database
+
+    // Determine the new status based on the action and current status
+    let updatedStatus = currentStatus;
+    if (action === "sign-in" && currentStatus === "Absent") {
+      updatedStatus = "Present";
+    } else if (action === "sign-out" && currentStatus === "Present") {
+      updatedStatus = "Absent";
+    }
+
+    // Update the state with the new status
+    setName(name);
+    setStudentID(studentID);
+    setCurrentStatus(currentStatus);
+    setUpdatedStatus(updatedStatus); // Set the state to the NEW status
+
+    setModalVisible(false);
+    setAlertModalVisible(true); // Show the modal AFTER updating the status
+  };
+
+  const handleConfirm = async () => {
+    const studentRef = doc(db, "students", studentID);
+    await updateDoc(studentRef, { status: updatedStatus });
+
+    setScanned(false);
+    setAlertModalVisible(false);
+    router.push("/");
   };
 
   return (
@@ -81,7 +165,17 @@ export default function ScanScreen() {
           }
         >
           <CameraOverlay />
-          {scanned && <ScanAlertModal />}
+          {scanned && (
+            <ScanAlertModal
+              name={name}
+              studentID={studentID}
+              currentStatus={currentStatus} // Pass currentStatus
+              updatedStatus={updatedStatus} // Pass updatedStatus (status state)
+              action={action}
+              onConfirm={handleConfirm}
+              onClose={() => setAlertModalVisible(false)}
+            />
+          )}
           <View className="absolute top-10 left-0 right-0 items-center">
             <Text className="text-white text-lg font-bold">
               {action === "sign-in" ? "Scan to Sign In" : "Scan to Sign Out"}
@@ -110,7 +204,7 @@ export default function ScanScreen() {
           {/* Cancel Button */}
           <TouchableOpacity
             className="absolute bottom-10 left-5 bg-red-500 p-3 rounded-lg"
-            onPress={() => router.back()}
+            onPress={() => router.push("/")}
           >
             <Text className="text-white font-bold">Cancel</Text>
           </TouchableOpacity>
@@ -183,7 +277,17 @@ export default function ScanScreen() {
       </Modal>
 
       {/* Alert Modal */}
-      {alertModalVisible && <ScanAlertModal />}
+      {alertModalVisible && (
+        <ScanAlertModal
+          name={name}
+          studentID={studentID}
+          currentStatus={currentStatus}
+          updatedStatus={updatedStatus}
+          action={action}
+          onConfirm={handleConfirm}
+          onClose={() => setAlertModalVisible(false)}
+        />
+      )}
     </View>
   );
 }
