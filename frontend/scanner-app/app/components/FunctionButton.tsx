@@ -8,6 +8,7 @@ interface FunctionButtonProps {
   icon: keyof typeof AntDesign.glyphMap; // Icon name from AntDesign
   color: string;
   action: string;
+  cameraFace: "back" | "front";
 }
 
 // FunctionButton component for the function buttons on the home screen
@@ -16,15 +17,16 @@ export default function FunctionButton({
   icon,
   color,
   action,
+  cameraFace,
 }: FunctionButtonProps) {
   return (
     <TouchableOpacity
       className="p-4 bg-white rounded-lg shadow-lg items-center border border-gray-100"
       onPress={() => {
-        // Navigate to the ScanScreen with the specific action (either "sign-in" or "sign-out")
+        // Navigate to the ScanScreen with the specific action ("sign-in" or "sign-out") and cameraFace ("back" or "front")
         router.push({
           pathname: "../screens/ScanScreen",
-          params: { action },
+          params: { action, cameraFace },
         });
       }}
     >

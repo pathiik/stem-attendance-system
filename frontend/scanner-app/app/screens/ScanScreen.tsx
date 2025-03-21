@@ -22,12 +22,15 @@ import ScanAlertModal from "../components/ScanAlertModal";
 
 // ScanScreen component (screen with camera view)
 export default function ScanScreen() {
-  // Get the action from the index page (either "sign-in" or "sign-out")
-  const { action } = useLocalSearchParams<{ action: string }>();
+  // Get action ("sign-in" or "sign-out") and cameraFace ("back" or "front") parameters from the index page
+  const { action, cameraFace } = useLocalSearchParams<{
+    action: string;
+    cameraFace: "back" | "front";
+  }>();
 
   const [permission, requestPermission] = useCameraPermissions(); // State for camera permission
   const [scanned, setScanned] = useState(false); // State for whether a QR code has been scanned
-  const [cameraFace, setCameraFace] = useState<"front" | "back">("back"); // State for camera facing direction
+  const [scanScreenCameraFace, setScanScreenCameraFace] = useState(cameraFace); // Local state for camera facing direction (only in Scan Screen)
   const [useStudentID, setUseStudentID] = useState(false); // State for whether to use student ID instead of QR code
   const [modalVisible, setModalVisible] = useState(false); // State for whether the student ID modal is visible
   const [alertModalVisible, setAlertModalVisible] = useState(false); // State for whether the alert modal is visible
@@ -48,16 +51,17 @@ export default function ScanScreen() {
   // Reset states when the screen loses focus (navigated away from)
   useFocusEffect(
     useCallback(() => {
-      return () => {
-        setScanned(false);
-        setAlertModalVisible(false);
-        setModalVisible(false);
-        setName("");
-        setStudentID("");
-        setCurrentStatus("");
-        setUpdatedStatus("");
-      };
-    }, [])
+      // Set the camera face to the value from the home screen
+      setScanScreenCameraFace(cameraFace);
+
+      setScanned(false);
+      setAlertModalVisible(false);
+      setModalVisible(false);
+      setName("");
+      setStudentID("");
+      setCurrentStatus("");
+      setUpdatedStatus("");
+    }, [cameraFace]) // Depends on change in cameraFace value to reset the change the state and value
   );
 
   // Function to handle scanned QR code
@@ -186,12 +190,17 @@ export default function ScanScreen() {
     router.push("/");
   };
 
+  // Function to toggle camera facing direction (front/back)
+  const toggleCameraFace = () => {
+    setScanScreenCameraFace((prev) => (prev === "back" ? "front" : "back"));
+  };
+
   return (
     <View className="flex-1">
       {permission?.granted ? (
         <CameraView
           style={{ flex: 1 }}
-          facing={cameraFace}
+          facing={scanScreenCameraFace}
           onBarcodeScanned={
             !useStudentID && !scanned ? handleScannedQRCode : undefined
           }
@@ -217,9 +226,7 @@ export default function ScanScreen() {
           {/* Toggle camera facing direction */}
           <TouchableOpacity
             className="absolute top-20 right-10"
-            onPress={() =>
-              setCameraFace(cameraFace === "back" ? "front" : "back")
-            }
+            onPress={toggleCameraFace}
           >
             <View className="flex-1 items-center">
               <MaterialCommunityIcons
@@ -228,7 +235,7 @@ export default function ScanScreen() {
                 color="#ffffff"
               />
               <Text className="text-white text-sm">
-                {cameraFace === "back" ? "Front" : "Back"}
+                {scanScreenCameraFace === "back" ? "Front" : "Back"}
               </Text>
             </View>
           </TouchableOpacity>
