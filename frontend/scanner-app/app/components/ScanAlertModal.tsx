@@ -2,16 +2,19 @@ import { View, Text, Modal, TouchableOpacity } from "react-native";
 import React, { useState, useEffect } from "react";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 
+// ScanAlertModal component props with specific types
 interface ScanAlertModalProps {
   name: string;
   studentID: string;
   currentStatus: string;
   updatedStatus: string;
   action: string;
+  // Functions to confirm the update (void -> no return value)
   onConfirm: () => void;
   onClose: () => void;
 }
 
+// ScanAlertModal component for the alert modal when a student signs in/out
 export default function ScanAlertModal({
   name,
   studentID,
@@ -21,35 +24,37 @@ export default function ScanAlertModal({
   onConfirm,
   onClose,
 }: ScanAlertModalProps) {
-  const [showFirstModal, setShowFirstModal] = useState(true);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const isStatusUpdated = updatedStatus !== currentStatus;
+  const [showFirstModal, setShowFirstModal] = useState(true); // Show first modal by default
+  const [showSuccessModal, setShowSuccessModal] = useState(false); // Visibility of success modal
+  const isStatusUpdated = updatedStatus !== currentStatus; // Check if status is updated
 
+  // Auto-close the success modal after 5 seconds
   useEffect(() => {
     if (showSuccessModal) {
       const timer = setTimeout(() => {
         setShowSuccessModal(false);
         onClose();
-      }, 3000); // Show success modal for 3 seconds
+      }, 5000);
 
       return () => clearTimeout(timer);
     }
   }, [showSuccessModal, onClose]);
 
+  // Handle the confirmation logic
   const handleConfirm = () => {
     setShowFirstModal(false);
     onConfirm();
 
     if (isStatusUpdated) {
-      setShowSuccessModal(true);
+      setShowSuccessModal(true); // Show success modal if status is updated
     } else {
-      onClose();
+      onClose(); // Close the modal if status is unchanged
     }
   };
 
   return (
     <>
-      {/* First Modal */}
+      {/* First Modal -> Displays status update/unchnaged info */}
       {showFirstModal && (
         <Modal transparent={true} visible={true} animationType="fade">
           <View className="flex-1 justify-center items-center">
@@ -108,6 +113,7 @@ export default function ScanAlertModal({
                 </View>
               </View>
 
+              {/* 'Confirm Update' or 'Close' button depending on the state of status */}
               <TouchableOpacity
                 className="bg-primary px-6 py-3 rounded-lg mt-6 w-full items-center"
                 onPress={handleConfirm}
@@ -121,7 +127,7 @@ export default function ScanAlertModal({
         </Modal>
       )}
 
-      {/* Success Modal */}
+      {/* Success Modal -> Displays success message after status update */}
       {showSuccessModal && (
         <Modal transparent={true} visible={true} animationType="fade">
           <View className="flex-1 justify-center items-center bg-black/50">

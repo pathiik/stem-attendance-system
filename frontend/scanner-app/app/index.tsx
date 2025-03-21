@@ -12,14 +12,16 @@ import { LinearGradient } from "expo-linear-gradient";
 import { MaterialIcons } from "@expo/vector-icons";
 import FunctionButton from "./components/FunctionButton";
 
+// Main component
 export default function Index() {
+  // Loading state variable (is page still loading or not) -> currently unused
   const [loading, setLoading] = useState(false);
 
-  //Setting greeting related state variables
-  const languages = ["Hi", "Hola", "Bonjour"];
-  const [greetingIndex, setGreetingIndex] = useState(0);
-  const [greetingText, setGreetingText] = useState(languages[0]);
-  const [timedGreeting, setTimedGreeting] = useState("");
+  //Greeting related state variables
+  const languages = ["Hi", "Hola", "Bonjour"]; // Greeting languages (English, Spanish, French)
+  const [greetingIndex, setGreetingIndex] = useState(0); // Current language index
+  const [greetingText, setGreetingText] = useState(languages[0]); // Current greeting index
+  const [timedGreeting, setTimedGreeting] = useState(""); // Timed greeting based on time of the day
 
   // Function to get timed greeting based on the current time and selected language
   const getTimesGreeting = (language: string) => {
@@ -71,7 +73,7 @@ export default function Index() {
     }
   };
 
-  // Cycling through greeting languages every 15 seconds (Hi, Hola, Bonjour)
+  // Cycles through greeting languages every 15 seconds (Hi, Hola, Bonjour)
   useEffect(() => {
     const interval = setInterval(() => {
       setGreetingIndex((prevIndex) => (prevIndex + 1) % languages.length);
@@ -80,14 +82,14 @@ export default function Index() {
     return () => clearInterval(interval); // Clearing interval on unmount
   }, []);
 
-  // Updating greeting text and timed greeting when language changes
+  // Updates greeting text and timed greeting when language changes
   useEffect(() => {
     const currentLanguage = languages[greetingIndex];
     setGreetingText(currentLanguage);
     setTimedGreeting(getTimesGreeting(currentLanguage));
   }, [greetingIndex]);
 
-  // Loading screen (if data is not yet fetched)
+  // Loading screen (if data is not yet fetched -> currenly unused)
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center">
@@ -105,6 +107,7 @@ export default function Index() {
           backgroundColor="transparent"
           translucent
         />
+
         {/* Gradient Background */}
         {/* Using 'style' instead of 'className' as it causes some issues with gradient in ios devices */}
         <View style={{ height: 200, position: "relative" }}>
@@ -122,6 +125,7 @@ export default function Index() {
             }}
           />
 
+          {/* Header section (with logo & three-dot menu) */}
           <View
             style={{
               position: "absolute",
@@ -132,6 +136,7 @@ export default function Index() {
             }}
           >
             <View className="flex-row items-center justify-between px-5">
+              {/* App Logo & Text */}
               <View className="flex-row items-center gap-3">
                 <Image
                   source={require("../assets/stem-icon-light.png")}
@@ -161,18 +166,20 @@ export default function Index() {
           </View>
         </View>
 
-        {/* Buttons */}
+        {/* Function Buttons */}
         <View
           className="flex-row justify-center items-center mt-10"
           style={{ gap: 50 }}
         >
-          {/* FunctionButton components passing the action prop determining the action to be performed on button press (either sign-in or sign-out) */}
+          {/* Sign In Button */}
           <FunctionButton
             text="Sign In"
             icon="login"
             color="green"
             action="sign-in"
           />
+
+          {/* Sign Out Button */}
           <FunctionButton
             text="Sign Out"
             icon="logout"

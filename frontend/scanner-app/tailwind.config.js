@@ -8,11 +8,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#1d2951', // Navy Blue
-        secondary: '0e4d92', // Lighter Navy Blue
-        text: '4c516d', // Text Color
+        primary: "#1d2951", // Navy Blue
+        secondary: "0e4d92", // Lighter Navy Blue
+        text: "4c516d", // Text Color
       },
     },
   },
   plugins: [],
-}
+};

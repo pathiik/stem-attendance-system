@@ -2,13 +2,15 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { router } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
 
+// FunctionButton component props with specific types
 interface FunctionButtonProps {
   text: string;
-  icon: keyof typeof AntDesign.glyphMap;
+  icon: keyof typeof AntDesign.glyphMap; // Icon name from AntDesign
   color: string;
   action: string;
 }
 
+// FunctionButton component for the function buttons on the home screen
 export default function FunctionButton({
   text,
   icon,
@@ -19,6 +21,7 @@ export default function FunctionButton({
     <TouchableOpacity
       className="p-4 bg-white rounded-lg shadow-lg items-center border border-gray-100"
       onPress={() => {
+        // Navigate to the ScanScreen with the specific action (either "sign-in" or "sign-out")
         router.push({
           pathname: "../screens/ScanScreen",
           params: { action },
@@ -29,6 +32,7 @@ export default function FunctionButton({
         <AntDesign name={icon} size={42} color={color} />
         <Text
           className="text-lg font-bold"
+          // Using 'style' for appropiate styling
           style={{
             color: color,
             width: 80,

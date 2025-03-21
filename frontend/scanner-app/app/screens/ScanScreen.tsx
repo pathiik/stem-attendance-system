@@ -20,28 +20,32 @@ import CameraOverlay from "../components/CameraOverlay";
 import InCameraButton from "../components/InCameraButton";
 import ScanAlertModal from "../components/ScanAlertModal";
 
+// ScanScreen component (screen with camera view)
 export default function ScanScreen() {
+  // Get the action from the index page (either "sign-in" or "sign-out")
   const { action } = useLocalSearchParams<{ action: string }>();
 
-  const [permission, requestPermission] = useCameraPermissions();
-  const [scanned, setScanned] = useState(false);
-  const [cameraFace, setCameraFace] = useState<"front" | "back">("back");
-  const [useStudentID, setUseStudentID] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [alertModalVisible, setAlertModalVisible] = useState(false);
-  const router = useRouter();
-  const [name, setName] = useState("");
-  const [studentID, setStudentID] = useState("");
-  const [currentStatus, setCurrentStatus] = useState("");
-  const [updatedStatus, setUpdatedStatus] = useState("");
+  const [permission, requestPermission] = useCameraPermissions(); // State for camera permission
+  const [scanned, setScanned] = useState(false); // State for whether a QR code has been scanned
+  const [cameraFace, setCameraFace] = useState<"front" | "back">("back"); // State for camera facing direction
+  const [useStudentID, setUseStudentID] = useState(false); // State for whether to use student ID instead of QR code
+  const [modalVisible, setModalVisible] = useState(false); // State for whether the student ID modal is visible
+  const [alertModalVisible, setAlertModalVisible] = useState(false); // State for whether the alert modal is visible
 
+  const router = useRouter();
+  const [name, setName] = useState(""); // Student Name
+  const [studentID, setStudentID] = useState(""); // Student ID
+  const [currentStatus, setCurrentStatus] = useState(""); // Current status of the student
+  const [updatedStatus, setUpdatedStatus] = useState(""); // Updated status of the student (after sign-in/sign-out)
+
+  // Request camera permission if not granted
   useEffect(() => {
     if (!permission) {
       requestPermission();
     }
   }, [permission]);
 
-  // Reset states when the screen is blurred (navigated away from)
+  // Reset states when the screen loses focus (navigated away from)
   useFocusEffect(
     useCallback(() => {
       return () => {
@@ -56,13 +60,16 @@ export default function ScanScreen() {
     }, [])
   );
 
+  // Function to handle scanned QR code
   const handleScannedQRCode = async (event: { data: string; type: string }) => {
+    // If already scanned or using student ID, do not scan again
     if (scanned || useStudentID) return;
 
     try {
       const lines = event.data.split("\n");
       const qrData: { [key: string]: string } = {};
 
+      // Parse the QR code data (into key-value pairs)
       lines.forEach((line) => {
         const [key, value] = line.split(":").map((part) => part.trim());
         if (key && value) {
@@ -70,6 +77,7 @@ export default function ScanScreen() {
         }
       });
 
+      // Check if the required fields are present in the QR code data
       const requiredFields = ["Student ID", "Name", "Status"];
       const isValidQRCode = requiredFields.every((field) => qrData[field]);
 
@@ -78,16 +86,20 @@ export default function ScanScreen() {
       const studentID = qrData["Student ID"];
       const name = qrData["Name"];
 
+      // Fetch student data from Firestore
       const studentRef = doc(db, "students", studentID);
       const studentSnap = await getDoc(studentRef);
 
+      // If student not found, show an error alert
       if (!studentSnap.exists()) {
         Alert.alert("Error", "Student not found");
         return;
       }
 
+      // Store the student data
       const studentData = studentSnap.data();
 
+      // Validate student name
       if (studentData.name !== name) {
         Alert.alert("Error", "Student name does not match");
         return;
@@ -95,6 +107,7 @@ export default function ScanScreen() {
 
       const currentStatus = studentData.status;
 
+      // Determine updated status based on the action (sign-in/sign-out)
       let updatedStatus = currentStatus;
       if (action === "sign-in" && currentStatus === "Absent") {
         updatedStatus = "Present";
@@ -102,6 +115,7 @@ export default function ScanScreen() {
         updatedStatus = "Absent";
       }
 
+      // Update state variables with student data
       setName(name);
       setStudentID(studentID);
       setCurrentStatus(currentStatus);
@@ -115,28 +129,34 @@ export default function ScanScreen() {
     }
   };
 
+  // Function to handle using student ID instead of QR code
   const handleUseStudentID = () => {
     setUseStudentID((prev) => !prev);
     setModalVisible((prev) => !prev);
   };
 
+  // Function to handle manual submission of student ID
   const handleSubmitStudentID = async () => {
     if (!studentID.trim()) {
       Alert.alert("Error", "Student ID cannot be empty");
       return;
     }
 
+    // Fetch student data from Firestore
     const studentRef = doc(db, "students", studentID);
     const studentSnap = await getDoc(studentRef);
 
+    // If student not found, show an error
     if (!studentSnap.exists()) {
       Alert.alert("Error", "Student not found");
       return;
     }
 
+    // Store the student data
     const studentData = studentSnap.data();
-    const { name, status: currentStatus } = studentData;
+    const { name, status: currentStatus } = studentData; // Destructure student data
 
+    // Determine updated status based on the action (sign-in/sign-out)
     let updatedStatus = currentStatus;
     if (action === "sign-in" && currentStatus === "Absent") {
       updatedStatus = "Present";
@@ -144,6 +164,7 @@ export default function ScanScreen() {
       updatedStatus = "Absent";
     }
 
+    // Update state variables with student data
     setName(name);
     setStudentID(studentID);
     setCurrentStatus(currentStatus);
@@ -153,8 +174,11 @@ export default function ScanScreen() {
     setAlertModalVisible(true);
   };
 
+  // Function to confirm the sign-in/sign-out action
   const handleConfirm = async () => {
+    // Link to the student document in Firestore
     const studentRef = doc(db, "students", studentID);
+    // Update the status of the student in Firestore
     await updateDoc(studentRef, { status: updatedStatus });
 
     setScanned(false);
@@ -190,6 +214,7 @@ export default function ScanScreen() {
             </Text>
           </View>
 
+          {/* Toggle camera facing direction */}
           <TouchableOpacity
             className="absolute top-20 right-10"
             onPress={() =>
@@ -208,6 +233,7 @@ export default function ScanScreen() {
             </View>
           </TouchableOpacity>
 
+          {/* Cancel button (nativate to home screen) */}
           <TouchableOpacity
             className="absolute bottom-10 left-5 bg-red-500 p-3 rounded-lg"
             onPress={() => router.push("/")}
@@ -215,6 +241,7 @@ export default function ScanScreen() {
             <Text className="text-white font-bold">Cancel</Text>
           </TouchableOpacity>
 
+          {/* Toggle to manual ID input */}
           {!useStudentID && (
             <TouchableOpacity
               className="absolute bottom-10 right-5 items-center"
@@ -225,6 +252,7 @@ export default function ScanScreen() {
           )}
         </CameraView>
       ) : (
+        // UI if camera permission is not granted
         <View className="flex-1 items-center justify-center bg-white">
           <StatusBar
             barStyle="dark-content"
@@ -241,6 +269,7 @@ export default function ScanScreen() {
         </View>
       )}
 
+      {/* Manual Student ID input modal */}
       <Modal transparent={true} visible={modalVisible} animationType="slide">
         <View
           className="flex-1 justify-center items-center"
@@ -277,6 +306,7 @@ export default function ScanScreen() {
         </View>
       </Modal>
 
+      {/* Alert modal for status update */}
       {alertModalVisible && (
         <ScanAlertModal
           name={name}
@@ -292,6 +322,7 @@ export default function ScanScreen() {
   );
 }
 
+// Styles using StyleSheet (for better targeting and performance)
 const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
