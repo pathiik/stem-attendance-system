@@ -229,6 +229,7 @@ export default function Index() {
             icon="login"
             color="green"
             action="sign-in"
+            cameraFace={cameraFace}
           />
 
           {/* Sign Out Button */}
@@ -237,6 +238,7 @@ export default function Index() {
             icon="logout"
             color="red"
             action="sign-out"
+            cameraFace={cameraFace}
           />
         </View>
         <Text></Text>
