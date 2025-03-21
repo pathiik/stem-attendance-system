@@ -9,13 +9,17 @@ import {
 } from "react-native";
 import { useState, useEffect } from "react";
 import { LinearGradient } from "expo-linear-gradient";
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import FunctionButton from "./components/FunctionButton";
 
 // Main component
 export default function Index() {
   // Loading state variable (is page still loading or not) -> currently unused
   const [loading, setLoading] = useState(false);
+
+  const [showMenu, setShowMenu] = useState(false); // State for showing/hiding three-dot menu
+  const [cameraFace, setCameraFace] = useState<"front" | "back">("back"); // State for camera facing direction
 
   //Greeting related state variables
   const languages = ["Hi", "Hola", "Bonjour"]; // Greeting languages (English, Spanish, French)
@@ -89,6 +93,24 @@ export default function Index() {
     setTimedGreeting(getTimesGreeting(currentLanguage));
   }, [greetingIndex]);
 
+  // Load camera face setting from local storage (as previously saved)
+  useEffect(() => {
+    const loadCameraFace = async () => {
+      const savedCameraFace = await AsyncStorage.getItem("cameraFace");
+      if (savedCameraFace) {
+        setCameraFace(savedCameraFace as "front" | "back");
+      }
+    };
+    loadCameraFace();
+  }, []);
+
+  // Function to handle camera face change (front/back) and save it to local storage
+  const handleCameraFace = async () => {
+    const newCameraFace = cameraFace === "back" ? "front" : "back";
+    setCameraFace(newCameraFace);
+    await AsyncStorage.setItem("cameraFace", newCameraFace);
+  };
+
   // Loading screen (if data is not yet fetched -> currenly unused)
   if (loading) {
     return (
@@ -99,7 +121,7 @@ export default function Index() {
   }
 
   return (
-    <TouchableWithoutFeedback>
+    <TouchableWithoutFeedback onPress={() => setShowMenu(false)}>
       <View className="flex-1 bg-white">
         {/* Styling the status bar */}
         <StatusBar
@@ -149,10 +171,40 @@ export default function Index() {
               </View>
 
               {/* Three-dot menu icon (currently unused) */}
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => setShowMenu(!showMenu)}>
                 <MaterialIcons name="more-vert" size={24} color="white" />
               </TouchableOpacity>
             </View>
+
+            {/* Three-dot menu options */}
+            {showMenu && (
+              <View className="absolute right-4 top-10 bg-white shadow-2xl rounded-lg px-6 py-4 z-20">
+                <TouchableOpacity className="flex-row items-center gap-2 py-2">
+                  <MaterialIcons name="logout" size={22} color="#ef4444" />
+                  <Text className="text-red-500 ml-2 font-bold">Logout</Text>
+                </TouchableOpacity>
+
+                {/* Separator Line */}
+                <View className="border-b border-gray-200 my-2" />
+
+                <TouchableOpacity
+                  className="flex-row items-center gap-2 py-2"
+                  onPress={handleCameraFace}
+                >
+                  <MaterialCommunityIcons
+                    name="camera-flip"
+                    size={22}
+                    color="#1d2951"
+                  />
+                  <View className="flex-col ml-2">
+                    <Text className="text-primary font-semibold">
+                      Camera Face
+                    </Text>
+                    <Text className="text-xs capitalize">{cameraFace}</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            )}
 
             {/* Greeting Section */}
             <View className="px-5 mt-6">
