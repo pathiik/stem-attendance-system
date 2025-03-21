@@ -13,13 +13,11 @@ The Attendance App (for scanner) is a mobile application designed for teachers (
 - `expo-camera` - Camera access for scanning QR codes
 - `expo-dev-client` - Expo development client (only for testing CameraView)
 - `firebase` - Firebase SDK for database
-- `react-native-dotenv` - Environment variables
-- `npm install @types/react-native-dotenv` - Types for environment variables
 
 ### Install via npm
 
 ```bash
-npm install nativewind tailwindcss react-native-safe-area-context react-native-reanimated expo-linear-gradient expo-camera firebase react-native-dotenv @types/react-native-dotenv
+npm install nativewind tailwindcss react-native-safe-area-context react-native-reanimated expo-linear-gradient expo-camera firebase
 ```
 
 ## 📂 Folder Structure
@@ -37,7 +35,6 @@ npm install nativewind tailwindcss react-native-safe-area-context react-native-r
 │── node_modules/            # Project dependencies
 │── .gitignore               # Files and folders to ignore in Git
 │── FirebaseConfig.ts        # Firebase configuration
-│── global.d.ts              # Global types
 │── metro.config.js          # Metro bundler configuration
 │── babel.config.js          # Babel configuration
 │── package.json             # Project dependencies and scripts
