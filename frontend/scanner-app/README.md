@@ -30,10 +30,14 @@ The Attendance App (for scanner) is a mobile application designed for teachers o
 
   - `react-native-reanimated` - Animated transitions
 
+- **Storage**
+
+  - `@react-native-async-storage/async-storage` - Asynchronous storage
+
 ### Install via npm
 
 ```bash
-npm install nativewind tailwindcss react-native-safe-area-context react-native-reanimated expo-linear-gradient expo-camera firebase @react-navigation/native @react-navigation/core react-native-screens
+npm install nativewind tailwindcss react-native-safe-area-context react-native-reanimated expo-linear-gradient expo-camera firebase @react-navigation/native @react-navigation/core react-native-screens @react-native-async-storage/async-storage
 ```
 
 ## 📂 Folder Structure
@@ -81,7 +85,7 @@ npm install
 Install additional dependencies:
 
 ```bash
-npm install nativewind tailwindcss react-native-safe-area-context react-native-reanimated expo-linear-gradient expo-camera firebase @react-navigation/native @react-navigation/core react-native-screens
+npm install nativewind tailwindcss react-native-safe-area-context react-native-reanimated expo-linear-gradient expo-camera firebase @react-navigation/native @react-navigation/core react-native-screens @react-native-async-storage/async-storage
 ```
 
 ### 3️⃣ Set Up Firebase
