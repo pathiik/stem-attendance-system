@@ -1,12 +1,12 @@
 import { View, Text, Modal, TouchableOpacity } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 
 interface ScanAlertModalProps {
   name: string;
   studentID: string;
-  currentStatus: string; // Current status before update
-  updatedStatus: string; // Updated status after update
+  currentStatus: string;
+  updatedStatus: string;
   action: string;
   onConfirm: () => void;
   onClose: () => void;
@@ -23,20 +23,28 @@ export default function ScanAlertModal({
 }: ScanAlertModalProps) {
   const [showFirstModal, setShowFirstModal] = useState(true);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  // Determine if the status has been updated
   const isStatusUpdated = updatedStatus !== currentStatus;
+
+  useEffect(() => {
+    if (showSuccessModal) {
+      const timer = setTimeout(() => {
+        setShowSuccessModal(false);
+        onClose();
+      }, 3000); // Show success modal for 3 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [showSuccessModal, onClose]);
 
   const handleConfirm = () => {
     setShowFirstModal(false);
     onConfirm();
 
-    setTimeout(() => {
+    if (isStatusUpdated) {
       setShowSuccessModal(true);
-      setTimeout(() => {
-        setShowSuccessModal(false);
-        onClose();
-      }, 10000);
-    }, 100);
+    } else {
+      onClose();
+    }
   };
 
   return (
@@ -49,7 +57,6 @@ export default function ScanAlertModal({
               className="flex items-center justify-center bg-white p-6 rounded-lg"
               style={{ width: 300 }}
             >
-              {/* Display "Status Updated" or "Status Unchanged" based on isStatusUpdated */}
               <Text className="text-primary font-bold text-xl mb-3">
                 {isStatusUpdated ? "Status Updated" : "Status Unchanged"}
               </Text>
@@ -101,12 +108,13 @@ export default function ScanAlertModal({
                 </View>
               </View>
 
-              {/* Confirmation Button */}
               <TouchableOpacity
                 className="bg-primary px-6 py-3 rounded-lg mt-6 w-full items-center"
                 onPress={handleConfirm}
               >
-                <Text className="text-white font-bold">Confirm Update</Text>
+                <Text className="text-white font-bold">
+                  {isStatusUpdated ? "Confirm Update" : "Close"}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -127,9 +135,9 @@ export default function ScanAlertModal({
                 color={action === "sign-in" ? "green" : "red"}
               />
               <Text
-                className={`text-xl font-bold mt-4 text-${
+                className={`text-xl font-bold mt-4 ${
                   action === "sign-in" ? "text-green-700" : "text-red-700"
-                } mt-3`}
+                }`}
               >
                 {action === "sign-in" ? "Signed In" : "Signed Out"}
               </Text>

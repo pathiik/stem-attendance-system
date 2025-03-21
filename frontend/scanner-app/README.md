@@ -13,11 +13,13 @@ The Attendance App (for scanner) is a mobile application designed for teachers (
 - `expo-camera` - Camera access for scanning QR codes
 - `expo-dev-client` - Expo development client (only for testing CameraView)
 - `firebase` - Firebase SDK for database
+- `@react-navigation/native` - Navigation library
+- `@react-navigation/core react-native-screens` - Required for React navigation
 
 ### Install via npm
 
 ```bash
-npm install nativewind tailwindcss react-native-safe-area-context react-native-reanimated expo-linear-gradient expo-camera firebase
+npm install nativewind tailwindcss react-native-safe-area-context react-native-reanimated expo-linear-gradient expo-camera firebase @react-navigation/native @react-navigation/core react-native-screens
 ```
 
 ## 📂 Folder Structure
@@ -65,7 +67,7 @@ npm install
 Install other required dependencies:
 
 ```bash
-npm install nativewind tailwindcss react-native-safe-area-context react-native-reanimated expo-linear-gradient expo-camera
+npm install nativewind tailwindcss react-native-safe-area-context react-native-reanimated expo-linear-gradient expo-camera firebase @react-navigation/native @react-navigation/core react-native-screens
 ```
 
 ### 3️⃣ Set Up Firebase

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, act } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -14,13 +14,13 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../FirebaseConfig";
+import { useFocusEffect } from "@react-navigation/native";
 
 import CameraOverlay from "../components/CameraOverlay";
 import InCameraButton from "../components/InCameraButton";
 import ScanAlertModal from "../components/ScanAlertModal";
 
 export default function ScanScreen() {
-  // Retreiving the action type from the home page (either "sign-in" or "sign-out")
   const { action } = useLocalSearchParams<{ action: string }>();
 
   const [permission, requestPermission] = useCameraPermissions();
@@ -35,16 +35,29 @@ export default function ScanScreen() {
   const [currentStatus, setCurrentStatus] = useState("");
   const [updatedStatus, setUpdatedStatus] = useState("");
 
-  // Requesting camera permission on mount
   useEffect(() => {
     if (!permission) {
       requestPermission();
     }
   }, [permission]);
 
-  // Function to handle the scanned QR code
+  // Reset states when the screen is blurred (navigated away from)
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setScanned(false);
+        setAlertModalVisible(false);
+        setModalVisible(false);
+        setName("");
+        setStudentID("");
+        setCurrentStatus("");
+        setUpdatedStatus("");
+      };
+    }, [])
+  );
+
   const handleScannedQRCode = async (event: { data: string; type: string }) => {
-    if (scanned || useStudentID) return; // Prevents multiple scans and disables scanning if using Student ID
+    if (scanned || useStudentID) return;
 
     try {
       const lines = event.data.split("\n");
@@ -82,7 +95,6 @@ export default function ScanScreen() {
 
       const currentStatus = studentData.status;
 
-      // Determine the new status based on the action and current status
       let updatedStatus = currentStatus;
       if (action === "sign-in" && currentStatus === "Absent") {
         updatedStatus = "Present";
@@ -90,14 +102,13 @@ export default function ScanScreen() {
         updatedStatus = "Absent";
       }
 
-      // Update the state with the new status
       setName(name);
       setStudentID(studentID);
-      setCurrentStatus(currentStatus); // Set the state to the NEW status
-      setUpdatedStatus(updatedStatus); // Set the state to the NEW status
+      setCurrentStatus(currentStatus);
+      setUpdatedStatus(updatedStatus);
 
       setScanned(true);
-      setAlertModalVisible(true); // Show the modal AFTER updating the status
+      setAlertModalVisible(true);
     } catch (error) {
       console.error("Error parsing QR code data:", error);
       Alert.alert("Error", "Invalid QR code data");
@@ -124,9 +135,8 @@ export default function ScanScreen() {
     }
 
     const studentData = studentSnap.data();
-    const { name, status: currentStatus } = studentData; // Current status from the database
+    const { name, status: currentStatus } = studentData;
 
-    // Determine the new status based on the action and current status
     let updatedStatus = currentStatus;
     if (action === "sign-in" && currentStatus === "Absent") {
       updatedStatus = "Present";
@@ -134,14 +144,13 @@ export default function ScanScreen() {
       updatedStatus = "Absent";
     }
 
-    // Update the state with the new status
     setName(name);
     setStudentID(studentID);
     setCurrentStatus(currentStatus);
-    setUpdatedStatus(updatedStatus); // Set the state to the NEW status
+    setUpdatedStatus(updatedStatus);
 
     setModalVisible(false);
-    setAlertModalVisible(true); // Show the modal AFTER updating the status
+    setAlertModalVisible(true);
   };
 
   const handleConfirm = async () => {
@@ -155,7 +164,6 @@ export default function ScanScreen() {
 
   return (
     <View className="flex-1">
-      {/* Checking the permission and displaying content based on that */}
       {permission?.granted ? (
         <CameraView
           style={{ flex: 1 }}
@@ -169,8 +177,8 @@ export default function ScanScreen() {
             <ScanAlertModal
               name={name}
               studentID={studentID}
-              currentStatus={currentStatus} // Pass currentStatus
-              updatedStatus={updatedStatus} // Pass updatedStatus (status state)
+              currentStatus={currentStatus}
+              updatedStatus={updatedStatus}
               action={action}
               onConfirm={handleConfirm}
               onClose={() => setAlertModalVisible(false)}
@@ -182,7 +190,6 @@ export default function ScanScreen() {
             </Text>
           </View>
 
-          {/* Toggle Camera Button */}
           <TouchableOpacity
             className="absolute top-20 right-10"
             onPress={() =>
@@ -201,7 +208,6 @@ export default function ScanScreen() {
             </View>
           </TouchableOpacity>
 
-          {/* Cancel Button */}
           <TouchableOpacity
             className="absolute bottom-10 left-5 bg-red-500 p-3 rounded-lg"
             onPress={() => router.push("/")}
@@ -209,8 +215,6 @@ export default function ScanScreen() {
             <Text className="text-white font-bold">Cancel</Text>
           </TouchableOpacity>
 
-          {/* Alternative attendance update (using Student ID) */}
-          {/* Use Student ID Button */}
           {!useStudentID && (
             <TouchableOpacity
               className="absolute bottom-10 right-5 items-center"
@@ -221,7 +225,6 @@ export default function ScanScreen() {
           )}
         </CameraView>
       ) : (
-        // Displaying permission request screen if permission is not granted
         <View className="flex-1 items-center justify-center bg-white">
           <StatusBar
             barStyle="dark-content"
@@ -238,13 +241,11 @@ export default function ScanScreen() {
         </View>
       )}
 
-      {/* Student ID Modal */}
       <Modal transparent={true} visible={modalVisible} animationType="slide">
         <View
           className="flex-1 justify-center items-center"
           style={{ backgroundColor: "rgba(0, 0, 0, 0.7)" }}
         >
-          {/* Button to switch to QR Scanning */}
           <TouchableOpacity
             className="bg-gray-300 absolute top-20 p-1 rounded-xl"
             onPress={handleUseStudentID}
@@ -257,7 +258,7 @@ export default function ScanScreen() {
               Enter Student ID
             </Text>
             <TextInput
-              style={styles.input} // Using styles instead of className (Tailwind CSS doesn't work as intended)
+              style={styles.input}
               placeholder="Student ID"
               value={studentID}
               onChangeText={setStudentID}
@@ -276,7 +277,6 @@ export default function ScanScreen() {
         </View>
       </Modal>
 
-      {/* Alert Modal */}
       {alertModalVisible && (
         <ScanAlertModal
           name={name}
