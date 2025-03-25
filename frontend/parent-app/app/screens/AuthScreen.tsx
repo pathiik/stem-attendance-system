@@ -9,10 +9,12 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Alert,
 } from "react-native";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { auth } from "../../FirebaseConfig";
 import { router } from "expo-router";
@@ -41,6 +43,24 @@ export default function AuthScreen() {
       return () => clearTimeout(timer);
     }
   }, [error]);
+
+  // Function to handle forgot password
+  const handleForgotPassword = async () => {
+    if (!email) {
+      Alert.alert("Error", "Please enter your email address first.");
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      Alert.alert(
+        "Password Reset Email Sent",
+        "Please check your email to reset your password."
+      );
+    } catch (error) {
+      Alert.alert("Error", "Failed to send password reset email");
+    }
+  };
 
   // Function to handle login and signup
   const handleAuth = async () => {
@@ -136,7 +156,7 @@ export default function AuthScreen() {
             </View>
 
             {/* Password Input */}
-            <View className="w-full bg-gray-100 p-3 rounded-lg mb-4 flex-row items-center">
+            <View className="w-full bg-gray-100 p-3 rounded-lg mb-2 flex-row items-center">
               <TextInput
                 className="flex-1 text-base text-text"
                 placeholder="Password"
@@ -153,6 +173,18 @@ export default function AuthScreen() {
                 />
               </TouchableOpacity>
             </View>
+
+            {/* Forgot Password Button (visible only in login tab) */}
+            {activeTab === "login" && (
+              <TouchableOpacity
+                onPress={handleForgotPassword}
+                className="self-end mb-3"
+              >
+                <Text className="text-primary text-sm font-medium">
+                  Forgot Password?
+                </Text>
+              </TouchableOpacity>
+            )}
 
             {/* Confirm Password Field (for signup only) */}
             {activeTab === "signup" && (
