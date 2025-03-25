@@ -81,8 +81,13 @@ export default function ScanScreen() {
         }
       });
 
+      // Ignore QR codes not from STEM Canada
+      if (qrData["Organization"]?.toLowerCase() !== "stem canada") {
+        return;
+      }
+
       // Check if the required fields are present in the QR code data
-      const requiredFields = ["Student ID", "Name", "Status"];
+      const requiredFields = ["Organization", "Student ID", "Name"];
       const isValidQRCode = requiredFields.every((field) => qrData[field]);
 
       if (!isValidQRCode) return;
