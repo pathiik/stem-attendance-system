@@ -50,7 +50,7 @@ export default function AuthScreen() {
       if (activeTab === "login") {
         // Login logic
         await signInWithEmailAndPassword(auth, email, password);
-        router.replace("/"); // Navigating to the home screen after login
+        router.push("/"); // Navigating to the home screen after login
       } else {
         // Signup logic
         // Checking if the email exists in the "parents" collection
