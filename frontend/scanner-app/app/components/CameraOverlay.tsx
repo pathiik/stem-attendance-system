@@ -1,26 +1,39 @@
-import { View, StyleSheet } from "react-native";
-import React from "react";
+import { View, StyleSheet, Dimensions } from "react-native";
+import React, { useState, useEffect } from "react";
 
 // CameraOverlay component for the camera view
 export default function CameraOverlay() {
+  // State to store the orientation of the device
+  const [orientation, setOrientation] = useState(
+    Dimensions.get("window").width > Dimensions.get("window").height
+      ? "LANDSCAPE"
+      : "PORTRAIT"
+  );
+
+  // Event listener to update the orientation state
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener("change", ({ window }) => {
+      setOrientation(window.width > window.height ? "LANDSCAPE" : "PORTRAIT");
+    });
+    return () => subscription?.remove();
+  }, []);
+
   return (
     // Container for the CameraOverlay component
     <View style={styles.container}>
-      {/* Top & Bottom Overlays covering the screen from top (32%) and bottom (35%) */}
-      <View style={styles.topBottomOverlay} />
-      <View style={[styles.topBottomOverlay, { height: "35%", bottom: 0 }]} />
-
-      {/* Left & Right Overlays covering the screen from the sides (15% each) */}
-      <View style={styles.sideOverlay} />
-      <View style={[styles.sideOverlay, { right: 0 }]} />
-
-      {/* Transparent Cutout Frame */}
-      <View style={styles.frame} />
+      {/* Square Frame in the center */}
+      <View
+        style={[
+          styles.frame,
+          orientation === "LANDSCAPE"
+            ? styles.landscapeFrame
+            : styles.portraitFrame,
+        ]}
+      />
     </View>
   );
 }
 
-// Using styles instead of className (Tailwind CSS doesn't work as intended)
 // Styles for the CameraOverlay component using StyleSheet
 const styles = StyleSheet.create({
   // Styles for the main container
@@ -29,32 +42,24 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: "100%",
     height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
   },
-  // Styles for the top & bottom overlays (semi-transparent black bars)
-  topBottomOverlay: {
-    position: "absolute",
-    width: "100%",
-    height: "32%",
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
-  },
-  // Styles for the left & right overlays (semi-transparent black bars)
-  sideOverlay: {
-    position: "absolute",
-    top: "32%",
-    width: "15%",
-    height: "33%",
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
-  },
-  // Styles for the transparent cutout frame in the center
+  // Styles for square frame in the center
   frame: {
-    position: "absolute",
-    top: "31.6%",
-    left: "14%",
-    width: "72%",
-    aspectRatio: 1,
-    borderWidth: 6,
+    borderWidth: 5,
     borderColor: "white",
-    borderRadius: 12,
+    borderRadius: 10,
     backgroundColor: "transparent",
+  },
+  // Styles for portrait frame
+  portraitFrame: {
+    width: "70%",
+    aspectRatio: 1,
+  },
+  // Styles for landscape frame
+  landscapeFrame: {
+    width: "45%",
+    aspectRatio: 1,
   },
 });
