@@ -39,3 +39,6 @@ app-example
 
 # Environment file
 .env
+
+# Firebase Config File
+FirebaseConfig.ts
