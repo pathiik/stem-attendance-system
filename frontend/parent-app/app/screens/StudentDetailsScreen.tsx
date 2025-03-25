@@ -75,6 +75,16 @@ export default function StudentDetailsScreen() {
           >
             {studentDetails.name}
           </Text>
+          {/* Student Email */}
+          <View className="flex-row items-center gap-1">
+            <Text
+              className="text-sm text-gray-600 text-center font-medium mt-1"
+              numberOfLines={1}
+              style={{ width: 250 }}
+            >
+              {studentDetails.email}
+            </Text>
+          </View>
           {/* Student ID */}
           <View className="flex-row items-center gap-1">
             <Text className="text-lg my-1 text-gray-600">
@@ -103,7 +113,7 @@ export default function StudentDetailsScreen() {
       </View>
 
       {/* Student Details */}
-      <ScrollView className="flex-1 px-5 py-7 mb-4">
+      <ScrollView className="flex-1 px-5 py-5 mb-4 mt-3">
         {/* Student Details Card */}
         <View className="bg-white px-5 py-4 rounded-lg mb-4 shadow-2xl">
           {/* Age and Date of Birth Section */}
@@ -138,11 +148,12 @@ export default function StudentDetailsScreen() {
             <Text className="text-xl font-bold text-primary mb-2">
               Parent Information
             </Text>
-            <View className="flex-row items-center gap-3">
+            <View className="flex-row items-center justify-center gap-2">
               <View className="w-1/3 items-center">
                 <MaterialIcons name="group" size={60} color="#1d2951" />
               </View>
-              <View className="w-2/3">
+              <View className="w-2/3 pr-5">
+                {/* Parent Name */}
                 <Text
                   className="text-xl font-bold text-primary"
                   numberOfLines={2}
@@ -150,12 +161,14 @@ export default function StudentDetailsScreen() {
                   {studentDetails.parent_name}
                 </Text>
                 <View className="mt-2 space-y-1">
+                  {/* Parent Phone (+ Icon) */}
                   <View className="flex-row items-center gap-1">
                     <MaterialIcons name="phone" size={16} color="#1d2951" />
                     <Text className="text-lg text-gray-600">
                       {studentDetails.parent_phone}
                     </Text>
                   </View>
+                  {/* Parent Email (+ Icon) */}
                   <View className="flex-row items-center gap-1">
                     <MaterialIcons name="email" size={16} color="#1d2951" />
                     <Text className="text-lg text-gray-600" numberOfLines={2}>
@@ -201,11 +214,12 @@ export default function StudentDetailsScreen() {
               <Text className="text-xl font-bold text-primary mt-2">
                 Emergency Information
               </Text>
-              <View className="flex-row items-center gap-3 mt-2">
+              <View className="flex-row items-center justify-center gap-3 mt-2">
                 <View className="w-1/3 items-center">
                   <MaterialIcons name="emergency" size={60} color="#1d2951" />
                 </View>
-                <View className="w-2/3">
+                <View className="w-2/3 pr-5">
+                  {/* Emergency Contact Name */}
                   <Text
                     className="text-xl font-bold text-primary"
                     numberOfLines={2}
@@ -213,12 +227,14 @@ export default function StudentDetailsScreen() {
                     {studentDetails.emergency_contact_name}
                   </Text>
                   <View className="mt-2 space-y-1">
+                    {/* Emergency Contact Phone (+ Icon) */}
                     <View className="flex-row items-center gap-1">
                       <MaterialIcons name="phone" size={16} color="#1d2951" />
                       <Text className="text-lg text-gray-600">
                         {studentDetails.emergency_contact_phone}
                       </Text>
                     </View>
+                    {/* Emergency Contact Email (+ Icon) */}
                     <View className="flex-row items-center gap-1">
                       <MaterialIcons name="email" size={16} color="#1d2951" />
                       <Text className="text-lg text-gray-600" numberOfLines={2}>
