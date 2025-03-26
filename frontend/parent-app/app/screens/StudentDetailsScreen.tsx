@@ -30,6 +30,23 @@ export default function StudentDetailsScreen() {
     return date.toLocaleDateString();
   };
 
+  const formatPhone = (phone: string | number | null | undefined) => {
+    if (phone == null) return "N/A";
+
+    const phoneStr = String(phone);
+
+    const cleaned = phoneStr.replace(/\D/g, "");
+    if (cleaned.length < 10) {
+      return phone;
+    }
+
+    const areaCode = cleaned.slice(0, 3);
+    const firstPart = cleaned.slice(3, 6);
+    const secondPart = cleaned.slice(6, 10);
+
+    return `(${areaCode}) ${firstPart}-${secondPart}`;
+  };
+
   // Fetch QR Code from Firestore when Show QR Code button is pressed
   useEffect(() => {
     if (showQRCode) {
@@ -208,7 +225,7 @@ export default function StudentDetailsScreen() {
                     <View className="flex-row items-center gap-1">
                       <MaterialIcons name="phone" size={16} color="#1d2951" />
                       <Text className="text-lg text-gray-600">
-                        {studentDetails.parent_phone}
+                        {formatPhone(studentDetails.parent_phone)}
                       </Text>
                     </View>
                     {/* Parent Email (+ Icon) */}
@@ -274,7 +291,7 @@ export default function StudentDetailsScreen() {
                       <View className="flex-row items-center gap-1">
                         <MaterialIcons name="phone" size={16} color="#1d2951" />
                         <Text className="text-lg text-gray-600">
-                          {studentDetails.emergency_contact_phone}
+                          {formatPhone(studentDetails.emergency_contact_phone)}
                         </Text>
                       </View>
                       {/* Emergency Contact Email (+ Icon) */}
