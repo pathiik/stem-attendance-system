@@ -15,31 +15,36 @@ import Modal from "react-native-modal";
 import { db } from "../../FirebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 
+// Student Details Screen
 export default function StudentDetailsScreen() {
+  // Get student details from the index page
   const { student } = useLocalSearchParams();
-  const studentDetails = JSON.parse(student as string);
-  const [showMore, setShowMore] = useState(false);
-  const [showQRCode, setShowQRCode] = useState(false);
-  const [qrCode, setQrCode] = useState("");
+  const studentDetails = JSON.parse(student as string); // Parse the student details
 
-  const [showMenu, setShowMenu] = useState(false);
+  const [showMore, setShowMore] = useState(false); // State for showing/hiding more details
+  const [showQRCode, setShowQRCode] = useState(false); // State for showing/hiding QR Code
+  const [qrCode, setQrCode] = useState(""); // State for storing QR Code URL
 
-  // Function to format date from timestamp
+  const [showMenu, setShowMenu] = useState(false); // State for showing/hiding three-dot menu
+
+  // Function to format date from timestamp to readable format
   const formatDate = (timestamp: { seconds: number }) => {
     const date = new Date(timestamp.seconds * 1000);
     return date.toLocaleDateString();
   };
 
+  // Function to format phone number to (XXX) XXX-XXXX format
   const formatPhone = (phone: string | number | null | undefined) => {
     if (phone == null) return "N/A";
 
     const phoneStr = String(phone);
+    const cleaned = phoneStr.replace(/\D/g, ""); // Remove non-digit characters
 
-    const cleaned = phoneStr.replace(/\D/g, "");
     if (cleaned.length < 10) {
-      return phone;
+      return phone; // Return the original phone number if not enough digits
     }
 
+    // Format as (XXX) XXX-XXXX
     const areaCode = cleaned.slice(0, 3);
     const firstPart = cleaned.slice(3, 6);
     const secondPart = cleaned.slice(6, 10);
@@ -47,7 +52,7 @@ export default function StudentDetailsScreen() {
     return `(${areaCode}) ${firstPart}-${secondPart}`;
   };
 
-  // Fetch QR Code from Firestore when Show QR Code button is pressed
+  // Fetches QR Code from Firestore when Show QR Code button is pressed and showQRCode state is true
   useEffect(() => {
     if (showQRCode) {
       const fetchQRCode = async () => {
@@ -72,7 +77,7 @@ export default function StudentDetailsScreen() {
     }
   }, [showQRCode]);
 
-  // Function to handle reporting an issue (Currently just an alert)
+  // Function to handle reporting an issue (currently just an alert)
   const handleReportIssue = () => {
     setShowMenu(false);
     Alert.alert(
@@ -119,7 +124,7 @@ export default function StudentDetailsScreen() {
           <MaterialIcons name="person" size={40} color="#1d2951" />
         </View>
 
-        {/* Student Name and Status Section */}
+        {/* Student Name and Basic Info */}
         <View className="mt-2 items-center">
           <Text
             className="text-2xl text-center font-bold text-primary uppercase tracking-wide"
@@ -143,7 +148,7 @@ export default function StudentDetailsScreen() {
               Student ID: {studentDetails.student_id}
             </Text>
           </View>
-          {/* Staudent Status */}
+          {/* Attendance Status Indicator */}
           <View
             className={`px-3 py-1 my-1 rounded-full ${
               studentDetails.status === "Present"
@@ -190,7 +195,7 @@ export default function StudentDetailsScreen() {
             </View>
           </View>
 
-          {/* Location Section */}
+          {/* Location */}
           <View className="flex-row justify-center items-center mt-4 gap-1">
             <MaterialIcons name="location-on" size={20} color="#1d2951" />
             <Text className="text-lg text-gray-600" numberOfLines={1}>
@@ -311,7 +316,7 @@ export default function StudentDetailsScreen() {
         </View>
       </ScrollView>
 
-      {/* Report Issue */}
+      {/* Report Issue Option */}
       {showMenu && (
         <TouchableWithoutFeedback onPress={() => setShowMenu(false)}>
           <View className="absolute right-9 top-12 bg-white shadow-2xl rounded-lg px-6 py-4 z-20">
@@ -346,6 +351,7 @@ export default function StudentDetailsScreen() {
           <Text className="text-lg font-bold text-primary mb-4">
             Student QR Code
           </Text>
+          {/* QR Code Image (or loading message -> if still loading) */}
           {qrCode ? (
             <Image
               source={{ uri: qrCode }}

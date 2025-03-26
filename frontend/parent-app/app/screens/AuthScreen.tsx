@@ -24,17 +24,24 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../FirebaseConfig";
 
+// Authentication screen for parents
 export default function AuthScreen() {
+  // State for current active tab (login or signup)
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [email, setEmail] = useState(""); // State for email input
+  const [password, setPassword] = useState(""); // State for password input
+  const [confirmPassword, setConfirmPassword] = useState(""); // State for confirm password input (signup only)
+
+  const [showPassword, setShowPassword] = useState(false); // State for showing/hiding password
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State for showing/hiding confirm password (signup only)
+
+  const [error, setError] = useState(""); // State for error message
+
+  // Safe area insets for device compatibility
   const insets = useSafeAreaInsets();
 
-  // Clearing the error message after 5 seconds
+  // Clears the error message automatically after 5 seconds
   useEffect(() => {
     if (error) {
       const timer = setTimeout(() => {
@@ -44,7 +51,7 @@ export default function AuthScreen() {
     }
   }, [error]);
 
-  // Function to handle forgot password
+  // Function to handle password reset flow
   const handleForgotPassword = async () => {
     if (!email) {
       Alert.alert("Error", "Please enter your email address first.");
@@ -62,8 +69,9 @@ export default function AuthScreen() {
     }
   };
 
-  // Function to handle login and signup
+  // Function to handle login and signup authentication
   const handleAuth = async () => {
+    // Validate password match for signup
     if (activeTab === "signup" && password !== confirmPassword) {
       setError("Passwords do not match");
       return;
@@ -71,33 +79,32 @@ export default function AuthScreen() {
 
     try {
       if (activeTab === "login") {
-        // Login logic
+        // Login logic (for existing users)
         await signInWithEmailAndPassword(auth, email, password);
-        router.push("/"); // Navigating to the home screen after login
+        router.push("/"); // Navigate to home screen
       } else {
-        // Signup logic
-        // Checking if the email exists in the "parents" collection
+        // Signup logic (for new users)
         const parentsRef = collection(db, "parents");
         const q = query(parentsRef, where("parent_email", "==", email));
         const querySnapshot = await getDocs(q);
 
-        // If email does not exist in Firestore
+        // Verify email exists in parents collection
         if (querySnapshot.empty) {
           setError("Email is not registered as a parent.");
           return;
         }
 
-        // If email exists in Firestore, creating an account
+        // Creating new account (if email exists in parents collection)
         await createUserWithEmailAndPassword(auth, email, password);
-        router.replace("/"); // Navigating to the home screen after signup
+        router.replace("/"); // Navigate to home screen
       }
     } catch (err) {
+      // Set appropriate error message
       setError(
         activeTab === "login"
           ? "Invalid email or password"
           : "Failed to create account"
       );
-      // console.error(err);
     }
   };
 
@@ -110,6 +117,7 @@ export default function AuthScreen() {
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 15 }}
         keyboardShouldPersistTaps="handled"
       >
+        {/* Main container with safe area padding */}
         <View
           className="flex-1 justify-start bg-white p-4"
           style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
@@ -134,8 +142,10 @@ export default function AuthScreen() {
             <Text className="text-sm text-gray-500">For Parents</Text>
           </View>
 
+          {/* Authentication Tabs (Login/Signup) */}
           <AuthTabs onTabChange={(tab) => setActiveTab(tab)} />
 
+          {/* Error Message (if any error occurs) */}
           {error && (
             <Text className="text-red-500 mb-4 text-center">{error}</Text>
           )}
@@ -155,7 +165,7 @@ export default function AuthScreen() {
               />
             </View>
 
-            {/* Password Input */}
+            {/* Password Input with visibility toggle */}
             <View className="w-full bg-gray-100 p-3 rounded-lg mb-2 flex-row items-center">
               <TextInput
                 className="flex-1 text-base text-text"
@@ -174,7 +184,7 @@ export default function AuthScreen() {
               </TouchableOpacity>
             </View>
 
-            {/* Forgot Password Button (visible only in login tab) */}
+            {/* Forgot Password link (visible only in login tab) */}
             {activeTab === "login" && (
               <TouchableOpacity
                 onPress={handleForgotPassword}

@@ -17,18 +17,22 @@ import { db } from "../FirebaseConfig";
 import { MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 
+// Main component
 export default function Index() {
-  // Declaring state variables
+  // Loading state variable (is page still loading or not)
+  const [loading, setLoading] = useState(true);
+
+  // Parent and children data state variables
   const [parentName, setParentName] = useState<string | null>(null);
   const [studentDetails, setStudentDetails] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showMenu, setShowMenu] = useState(false); // For showing/hiding logout menu
 
-  //Setting greeting related state variables
-  const languages = ["Hi", "Hola", "Bonjour"];
-  const [greetingIndex, setGreetingIndex] = useState(0);
-  const [greetingText, setGreetingText] = useState(languages[0]);
-  const [timedGreeting, setTimedGreeting] = useState("");
+  const [showMenu, setShowMenu] = useState(false); // State for showing/hiding logout menu
+
+  // Greeting related state variables
+  const languages = ["Hi", "Hola", "Bonjour"]; // Greeting languages (English, Spanish, French)
+  const [greetingIndex, setGreetingIndex] = useState(0); // Current language index
+  const [greetingText, setGreetingText] = useState(languages[0]); // Current greeting index
+  const [timedGreeting, setTimedGreeting] = useState(""); // Timed greeting based on time of the day
 
   // Function to get timed greeting based on the current time and selected language
   const getTimesGreeting = (language: string) => {
@@ -89,18 +93,18 @@ export default function Index() {
     return () => clearInterval(interval); // Clearing interval on unmount
   }, []);
 
-  // Updating greeting text and timed greeting when language changes
+  // Updates greeting text and timed greeting when language changes
   useEffect(() => {
     const currentLanguage = languages[greetingIndex];
     setGreetingText(currentLanguage);
     setTimedGreeting(getTimesGreeting(currentLanguage));
   }, [greetingIndex]);
 
-  // Fetching parent and children data from Firestore
+  // Fetches parent and children data from Firestore on component mount
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        router.replace("/screens/AuthScreen"); // Redirecting to login screen if no user
+        router.replace("/screens/AuthScreen"); // Redirect to auth screen if no user
         setLoading(false);
         return;
       }
@@ -114,15 +118,15 @@ export default function Index() {
       try {
         const parentDocRef = doc(db, "parents", parentEmail);
 
-        // Real-time listener for parent database
+        // Real-time listener for parent document changes
         const unsubscribeParent = onSnapshot(parentDocRef, (parentDocSnap) => {
           if (parentDocSnap.exists()) {
             const parentData = parentDocSnap.data();
             const firstName = parentData.parent_name.split(" ")[0];
-            setParentName(firstName || "Parent");
+            setParentName(firstName || "Parent"); // Set parent name or default to "Parent"
 
             if (Array.isArray(parentData.children)) {
-              // Setting up listeners for each student document
+              // Set up listeners for each child document
               const unsubscribeStudents = parentData.children.map((child) => {
                 const studentDocRef = doc(
                   db,
@@ -139,6 +143,7 @@ export default function Index() {
                         (detail) => detail.student_id === studentData.student_id
                       );
 
+                      // Update existing student data or add new student data
                       if (index !== -1) {
                         updatedDetails[index] = studentData;
                       } else {
@@ -150,8 +155,7 @@ export default function Index() {
                 });
               });
 
-              // Setting loading to false after setting up all listeners
-              setLoading(false);
+              setLoading(false); // Data loaded (disable loading spinner)
 
               return () => unsubscribeStudents.forEach((unsub) => unsub());
             }
@@ -159,7 +163,7 @@ export default function Index() {
           setLoading(false);
         });
 
-        return () => unsubscribeParent();
+        return () => unsubscribeParent(); // Cleanup parent listener
       } catch (error) {
         console.error("Error fetching parent or children data:", error);
         setLoading(false);
@@ -169,7 +173,7 @@ export default function Index() {
     return () => unsubscribeAuth(); // Cleanup auth listener
   }, []);
 
-  // Logout function
+  // Handles user logout functionality
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -179,7 +183,7 @@ export default function Index() {
     }
   };
 
-  // Shows loading spinner while fetching data
+  // Show loading spinner while data is being fetched
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center">
@@ -191,7 +195,7 @@ export default function Index() {
   return (
     <TouchableWithoutFeedback onPress={() => setShowMenu(false)}>
       <View className="flex-1 bg-white">
-        {/* Styling the status bar */}
+        {/* Status bar styling */}
         <StatusBar
           barStyle="light-content"
           backgroundColor="transparent"
@@ -215,7 +219,7 @@ export default function Index() {
             }}
           />
 
-          {/* Header and Greeting (placed inside absolute view so they overlay the gradient) */}
+          {/* Header section (with logo & three-dot menu) */}
           <View
             style={{
               position: "absolute",
@@ -225,7 +229,7 @@ export default function Index() {
               zIndex: 10,
             }}
           >
-            {/* Header with logo and three-dot menu */}
+            {/* App Logo & Text */}
             <View className="flex-row justify-between items-center px-5">
               <View className="flex-row items-center gap-3">
                 <Image
@@ -244,7 +248,7 @@ export default function Index() {
               </TouchableOpacity>
             </View>
 
-            {/* Logout Menu */}
+            {/* Logout Option */}
             {showMenu && (
               <View className="absolute right-4 top-10 bg-white shadow-2xl rounded-lg px-6 py-4 z-20">
                 <TouchableOpacity
@@ -292,7 +296,7 @@ export default function Index() {
                     <MaterialIcons name="person" size={30} color="#1d2951" />
                   </View>
                   <View className="ml-4 flex-1">
-                    {/* Student Name and Status Text */}
+                    {/* Student Name and Status */}
                     <View className="flex-row justify-between items-center">
                       <Text
                         className="text-xl font-bold text-primary uppercase tracking-wide"
@@ -301,7 +305,7 @@ export default function Index() {
                       >
                         {student.name}
                       </Text>
-                      {/* Status Text */}
+                      {/* Status Indicator */}
                       <View
                         className={`px-3 py-1 rounded-full ${
                           student.status === "Present"
@@ -321,7 +325,7 @@ export default function Index() {
                       </View>
                     </View>
 
-                    {/* Student Details */}
+                    {/* Student Details Section */}
                     <View className="flex-row items-center mt-1 gap-1">
                       <MaterialIcons name="badge" size={16} color="#1d2951" />
                       <Text className="text-sm text-gray-600">
@@ -352,7 +356,9 @@ export default function Index() {
               </TouchableOpacity>
             ))
           ) : (
-            <Text className="text-lg text-gray-500">No children found.</Text>
+            <Text className="text-lg text-center text-gray-500">
+              No children found.
+            </Text>
           )}
         </ScrollView>
       </View>
