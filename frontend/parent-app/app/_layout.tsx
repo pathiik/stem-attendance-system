@@ -1,5 +1,8 @@
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Stack } from "expo-router";
+import { useState } from "react";
+import { TouchableOpacity, View, Text } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 import "./globals.css";
 
 export default function RootLayout() {
