@@ -270,7 +270,10 @@ export default function Index() {
         </View>
 
         {/* Children List */}
-        <ScrollView className="flex-1 px-5 py-7">
+        <ScrollView
+          className="flex-1 px-5 py-7"
+          contentContainerStyle={{ paddingBottom: 30 }}
+        >
           {studentDetails.length > 0 ? (
             studentDetails.map((student, index) => (
               <TouchableOpacity

@@ -6,9 +6,11 @@ import {
   TouchableOpacity,
   StatusBar,
   Image,
+  Alert,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons, Octicons } from "@expo/vector-icons";
 import Modal from "react-native-modal";
 import { db } from "../../FirebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
@@ -20,10 +22,29 @@ export default function StudentDetailsScreen() {
   const [showQRCode, setShowQRCode] = useState(false);
   const [qrCode, setQrCode] = useState("");
 
+  const [showMenu, setShowMenu] = useState(false);
+
   // Function to format date from timestamp
   const formatDate = (timestamp: { seconds: number }) => {
     const date = new Date(timestamp.seconds * 1000);
     return date.toLocaleDateString();
+  };
+
+  const formatPhone = (phone: string | number | null | undefined) => {
+    if (phone == null) return "N/A";
+
+    const phoneStr = String(phone);
+
+    const cleaned = phoneStr.replace(/\D/g, "");
+    if (cleaned.length < 10) {
+      return phone;
+    }
+
+    const areaCode = cleaned.slice(0, 3);
+    const firstPart = cleaned.slice(3, 6);
+    const secondPart = cleaned.slice(6, 10);
+
+    return `(${areaCode}) ${firstPart}-${secondPart}`;
   };
 
   // Fetch QR Code from Firestore when Show QR Code button is pressed
@@ -51,6 +72,30 @@ export default function StudentDetailsScreen() {
     }
   }, [showQRCode]);
 
+  // Function to handle reporting an issue (Currently just an alert)
+  const handleReportIssue = () => {
+    setShowMenu(false);
+    Alert.alert(
+      "Report Issue",
+      "Would you like to report an issue with the student's information?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Report Issue",
+          onPress: () => {
+            Alert.alert(
+              "Issue Reported",
+              "The issue has been reported successfully."
+            );
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <View className="flex-1 bg-white">
       {/* Styling the status bar */}
@@ -59,6 +104,13 @@ export default function StudentDetailsScreen() {
         backgroundColor="transparent"
         translucent
       />
+
+      {/* Info icon for rporting issue */}
+      <View className="absolute top-4 right-4 z-10">
+        <TouchableOpacity onPress={() => setShowMenu((prev) => !prev)}>
+          <MaterialIcons name="info" size={24} color="#1d2951" />
+        </TouchableOpacity>
+      </View>
 
       {/* Profile Picture and Name Section */}
       <View className="items-center mt-5">
@@ -75,6 +127,16 @@ export default function StudentDetailsScreen() {
           >
             {studentDetails.name}
           </Text>
+          {/* Student Email */}
+          <View className="flex-row items-center gap-1">
+            <Text
+              className="text-sm text-gray-600 text-center font-medium mt-1"
+              numberOfLines={1}
+              style={{ width: 250 }}
+            >
+              {studentDetails.email}
+            </Text>
+          </View>
           {/* Student ID */}
           <View className="flex-row items-center gap-1">
             <Text className="text-lg my-1 text-gray-600">
@@ -103,7 +165,10 @@ export default function StudentDetailsScreen() {
       </View>
 
       {/* Student Details */}
-      <ScrollView className="flex-1 px-5 py-7 mb-4">
+      <ScrollView
+        className="flex-1 px-5 py-5 mb-4 mt-3"
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
+      >
         {/* Student Details Card */}
         <View className="bg-white px-5 py-4 rounded-lg mb-4 shadow-2xl">
           {/* Age and Date of Birth Section */}
@@ -138,11 +203,12 @@ export default function StudentDetailsScreen() {
             <Text className="text-xl font-bold text-primary mb-2">
               Parent Information
             </Text>
-            <View className="flex-row items-center gap-3">
+            <View className="flex-row items-center justify-center gap-2">
               <View className="w-1/3 items-center">
                 <MaterialIcons name="group" size={60} color="#1d2951" />
               </View>
-              <View className="w-2/3">
+              <View className="w-2/3 pr-5">
+                {/* Parent Name */}
                 <Text
                   className="text-xl font-bold text-primary"
                   numberOfLines={2}
@@ -150,12 +216,14 @@ export default function StudentDetailsScreen() {
                   {studentDetails.parent_name}
                 </Text>
                 <View className="mt-2 space-y-1">
+                  {/* Parent Phone (+ Icon) */}
                   <View className="flex-row items-center gap-1">
                     <MaterialIcons name="phone" size={16} color="#1d2951" />
                     <Text className="text-lg text-gray-600">
-                      {studentDetails.parent_phone}
+                      {formatPhone(studentDetails.parent_phone)}
                     </Text>
                   </View>
+                  {/* Parent Email (+ Icon) */}
                   <View className="flex-row items-center gap-1">
                     <MaterialIcons name="email" size={16} color="#1d2951" />
                     <Text className="text-lg text-gray-600" numberOfLines={2}>
@@ -201,11 +269,12 @@ export default function StudentDetailsScreen() {
               <Text className="text-xl font-bold text-primary mt-2">
                 Emergency Information
               </Text>
-              <View className="flex-row items-center gap-3 mt-2">
+              <View className="flex-row items-center justify-center gap-3 mt-2">
                 <View className="w-1/3 items-center">
                   <MaterialIcons name="emergency" size={60} color="#1d2951" />
                 </View>
-                <View className="w-2/3">
+                <View className="w-2/3 pr-5">
+                  {/* Emergency Contact Name */}
                   <Text
                     className="text-xl font-bold text-primary"
                     numberOfLines={2}
@@ -213,12 +282,14 @@ export default function StudentDetailsScreen() {
                     {studentDetails.emergency_contact_name}
                   </Text>
                   <View className="mt-2 space-y-1">
+                    {/* Emergency Contact Phone (+ Icon) */}
                     <View className="flex-row items-center gap-1">
                       <MaterialIcons name="phone" size={16} color="#1d2951" />
                       <Text className="text-lg text-gray-600">
-                        {studentDetails.emergency_contact_phone}
+                        {formatPhone(studentDetails.emergency_contact_phone)}
                       </Text>
                     </View>
+                    {/* Emergency Contact Email (+ Icon) */}
                     <View className="flex-row items-center gap-1">
                       <MaterialIcons name="email" size={16} color="#1d2951" />
                       <Text className="text-lg text-gray-600" numberOfLines={2}>
@@ -239,6 +310,24 @@ export default function StudentDetailsScreen() {
           )}
         </View>
       </ScrollView>
+
+      {/* Report Issue */}
+      {showMenu && (
+        <TouchableWithoutFeedback onPress={() => setShowMenu(false)}>
+          <View className="absolute right-9 top-12 bg-white shadow-2xl rounded-lg px-6 py-4 z-20">
+            <TouchableOpacity
+              className="flex-row items-center justify-center gap-2"
+              onPress={() => {
+                setShowMenu(false);
+                handleReportIssue();
+              }}
+            >
+              <Octicons name="report" size={18} color="#1d2951" />
+              <Text className="text-primary ml-2 font-bold">Report Issue</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableWithoutFeedback>
+      )}
 
       {/* QR Code Modal */}
       <Modal
