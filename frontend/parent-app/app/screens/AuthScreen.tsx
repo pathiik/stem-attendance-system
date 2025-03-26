@@ -107,7 +107,7 @@ export default function AuthScreen() {
       className="flex-1 bg-white"
     >
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 15 }}
         keyboardShouldPersistTaps="handled"
       >
         <View
