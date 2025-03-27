@@ -1,21 +1,16 @@
-import { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 
-// Authentication tabs component
-export default function AuthTabs({
-  onTabChange,
-}: {
-  onTabChange: (tab: "login" | "signup") => void;
-}) {
-  // State for active tab (login or signup)
-  const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
+// Authentication Tab type
+type AuthTab = "login" | "signup";
 
-  // Function to handle tab change
-  const handleTabChange = (tab: "login" | "signup") => {
-    setActiveTab(tab);
-    onTabChange(tab);
-  };
+// Props for the AuthTabs component
+interface AuthTabsProps {
+  activeTab: AuthTab;
+  onTabChange: (tab: AuthTab) => void;
+}
 
+// Authentication Tabs component
+export default function AuthTabs({ activeTab, onTabChange }: AuthTabsProps) {
   return (
     <View className="flex-row justify-center mb-8">
       {/* Login Tab */}
@@ -23,8 +18,7 @@ export default function AuthTabs({
         className={`px-8 py-3 rounded-full ${
           activeTab === "login" ? "bg-primary" : "bg-gray-200"
         }`}
-        onPress={() => handleTabChange("login")}
-        activeOpacity={0.7}
+        onPress={() => onTabChange("login")}
       >
         <Text
           className={`text-lg font-semibold ${
@@ -40,8 +34,7 @@ export default function AuthTabs({
         className={`px-8 py-3 rounded-full ml-4 ${
           activeTab === "signup" ? "bg-primary" : "bg-gray-200"
         }`}
-        onPress={() => handleTabChange("signup")}
-        activeOpacity={0.7}
+        onPress={() => onTabChange("signup")}
       >
         <Text
           className={`text-lg font-semibold ${

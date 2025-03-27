@@ -8,14 +8,19 @@ export default function RootLayout() {
     // SafeAreaProvider is used to handle the safe area insets for the app
     <SafeAreaProvider>
       <Stack>
+        {/* Index Screen with no header */}
+        <Stack.Screen
+          name="index"
+          options={{ title: "Attendance App (Parents)", headerShown: false }}
+        />
         {/* Authentication Screen (Login/Signup) with no header */}
         <Stack.Screen
           name="screens/AuthScreen"
           options={{ title: "Attendance App (Parents)", headerShown: false }}
         />
-        {/* Home Screen (index) with no header */}
+        {/* Home Screen with no header */}
         <Stack.Screen
-          name="index"
+          name="screens/HomeScreen"
           options={{ title: "Attendance App (Parents)", headerShown: false }}
         />
         {/* Student Details Screen with header title "Student Details" */}

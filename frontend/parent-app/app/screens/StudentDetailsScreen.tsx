@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,11 +8,17 @@ import {
   Alert,
   TouchableWithoutFeedback,
 } from "react-native";
+import React, { useState, useEffect } from "react";
 import { useLocalSearchParams } from "expo-router";
+
 import { MaterialIcons, Octicons } from "@expo/vector-icons";
 import Modal from "react-native-modal";
+
 import { db } from "../../FirebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
+
+import { formatDate, formatPhone } from "../utils/formatters";
+import ContactInfoCard from "../components/ContactInfoCard";
 
 // Student Details Screen
 export default function StudentDetailsScreen() {
@@ -26,31 +31,6 @@ export default function StudentDetailsScreen() {
   const [qrCode, setQrCode] = useState(""); // State for storing QR Code URL
 
   const [showMenu, setShowMenu] = useState(false); // State for showing/hiding three-dot menu
-
-  // Function to format date from timestamp to readable format
-  const formatDate = (timestamp: { seconds: number }) => {
-    const date = new Date(timestamp.seconds * 1000);
-    return date.toLocaleDateString();
-  };
-
-  // Function to format phone number to (XXX) XXX-XXXX format
-  const formatPhone = (phone: string | number | null | undefined) => {
-    if (phone == null) return "N/A";
-
-    const phoneStr = String(phone);
-    const cleaned = phoneStr.replace(/\D/g, ""); // Remove non-digit characters
-
-    if (cleaned.length < 10) {
-      return phone; // Return the original phone number if not enough digits
-    }
-
-    // Format as (XXX) XXX-XXXX
-    const areaCode = cleaned.slice(0, 3);
-    const firstPart = cleaned.slice(3, 6);
-    const secondPart = cleaned.slice(6, 10);
-
-    return `(${areaCode}) ${firstPart}-${secondPart}`;
-  };
 
   // Fetches QR Code from Firestore when Show QR Code button is pressed and showQRCode state is true
   useEffect(() => {
@@ -204,41 +184,13 @@ export default function StudentDetailsScreen() {
           </View>
 
           {/* Parent Information Section */}
-          <View className="mt-4">
-            <Text className="text-xl font-bold text-primary mb-2">
-              Parent Information
-            </Text>
-            <View className="flex-row items-center justify-center gap-2">
-              <View className="w-1/3 items-center">
-                <MaterialIcons name="group" size={60} color="#1d2951" />
-              </View>
-              <View className="w-2/3 pr-5">
-                {/* Parent Name */}
-                <Text
-                  className="text-xl font-bold text-primary"
-                  numberOfLines={2}
-                >
-                  {studentDetails.parent_name}
-                </Text>
-                <View className="mt-2 space-y-1">
-                  {/* Parent Phone (+ Icon) */}
-                  <View className="flex-row items-center gap-1">
-                    <MaterialIcons name="phone" size={16} color="#1d2951" />
-                    <Text className="text-lg text-gray-600">
-                      {formatPhone(studentDetails.parent_phone)}
-                    </Text>
-                  </View>
-                  {/* Parent Email (+ Icon) */}
-                  <View className="flex-row items-center gap-1">
-                    <MaterialIcons name="email" size={16} color="#1d2951" />
-                    <Text className="text-lg text-gray-600" numberOfLines={2}>
-                      {studentDetails.parent_email}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            </View>
-          </View>
+          <ContactInfoCard
+            title="Parent Information"
+            iconName="group"
+            name={studentDetails.parent_name}
+            phone={formatPhone(studentDetails.parent_phone)}
+            email={studentDetails.parent_email}
+          />
 
           {/* Show QR Code Button */}
           <TouchableOpacity onPress={() => setShowQRCode(true)}>
@@ -270,41 +222,13 @@ export default function StudentDetailsScreen() {
           {/* Hidden Details when "View More" is clicked */}
           {showMore && (
             <View>
-              {/* Emergency Information Section */}
-              <Text className="text-xl font-bold text-primary mt-2">
-                Emergency Information
-              </Text>
-              <View className="flex-row items-center justify-center gap-3 mt-2">
-                <View className="w-1/3 items-center">
-                  <MaterialIcons name="emergency" size={60} color="#1d2951" />
-                </View>
-                <View className="w-2/3 pr-5">
-                  {/* Emergency Contact Name */}
-                  <Text
-                    className="text-xl font-bold text-primary"
-                    numberOfLines={2}
-                  >
-                    {studentDetails.emergency_contact_name}
-                  </Text>
-                  <View className="mt-2 space-y-1">
-                    {/* Emergency Contact Phone (+ Icon) */}
-                    <View className="flex-row items-center gap-1">
-                      <MaterialIcons name="phone" size={16} color="#1d2951" />
-                      <Text className="text-lg text-gray-600">
-                        {formatPhone(studentDetails.emergency_contact_phone)}
-                      </Text>
-                    </View>
-                    {/* Emergency Contact Email (+ Icon) */}
-                    <View className="flex-row items-center gap-1">
-                      <MaterialIcons name="email" size={16} color="#1d2951" />
-                      <Text className="text-lg text-gray-600" numberOfLines={2}>
-                        {studentDetails.emergency_contact_email}
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-              </View>
-
+              <ContactInfoCard
+                title="Emergency Information"
+                iconName="emergency"
+                name={studentDetails.emergency_contact_name}
+                phone={formatPhone(studentDetails.emergency_contact_phone)}
+                email={studentDetails.emergency_contact_email}
+              />
               {/* ID Expiry Date Section */}
               <View className="mt-4">
                 <Text className="text-lg text-gray-600">

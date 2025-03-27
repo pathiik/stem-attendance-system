@@ -15,15 +15,16 @@ The Attendance App (for parent) is a mobile application designed for parents to 
 
 ## 🔥 Key Features
 
-| Feature                  | Description                                               |
-| ------------------------ | --------------------------------------------------------- |
-| **Authentication 🔐**    | Login and Signup functionality using Firebase.            |
-| **Dynamic Greetings 🌍** | Greetings in multiple languages based on time of the day. |
-| **Real-Time Updates 🔄** | Real-time data updates using Firebase Firestore.          |
-| **Navigation System 🧭** | Navigation between screens using Expo Router.             |
-| **QR Code Access 🖼️**    | View the QR Code of a child within the app.               |
-| **Beautiful UI 🎨**      | Safe Area View and Flexbox for responsive design.         |
-| **User Management 👥**   | Profile retrieval and sign out functionality.             |
+| Feature                    | Description                                               |
+| -------------------------- | --------------------------------------------------------- |
+| **Authentication 🔐**      | Login and Signup functionality using Firebase.            |
+| **Dynamic Greetings 🌍**   | Greetings in multiple languages based on time of the day. |
+| **Real-Time Updates 🔄**   | Real-time data updates using Firebase Firestore.          |
+| **Navigation System 🧭**   | Navigation between screens using Expo Router.             |
+| **QR Code Access 🖼️**      | View the QR Code of a child within the app.               |
+| **Beautiful UI 🎨**        | Safe Area View and Flexbox for responsive design.         |
+| **User Management 👥**     | Profile retrieval and sign out functionality.             |
+| **Reusable Components ♻️** | Custom components for forms, buttons, and more.           |
 
 ---
 
@@ -103,8 +104,11 @@ npm install nativewind tailwind react-native-safe-area-context expo-linear-gradi
 /parent-app
 │── .expo/                   # Expo development files 🛠️
 │── app/                     # Main application code
-│   ├── components/          # Reusable components (e.g., AuthTabs) 🧩
-│   ├── screens/             # Application screens (e.g., AuthScreen, StudentDetailsScreen) 🖥️
+│   ├── components/          # Reusable components (e.g., AuthTabs, FormInput, etc.) 🧩
+│   ├── constants/           # Application constants (e.g., routes, etc.) 🚗
+│   ├── hooks/               # Custom hooks (e.g., useAuth, useStudents) ⚓
+│   ├── screens/             # Application screens (e.g., HomeScreen, AuthScreen, etc.) 🖥️
+│   ├── utils/               # Utility functions (e.g., formatDate, etc.) 🛠️
 │   ├── globals.css          # Tailwind CSS global styles 🎨
 │   ├── _layout.tsx          # Root layout and navigation setup 🌐
 │   └── index.tsx            # Main entry point ⚡
