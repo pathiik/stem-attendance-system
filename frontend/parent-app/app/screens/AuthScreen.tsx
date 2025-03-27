@@ -1,8 +1,6 @@
-import { useState, useEffect } from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   Image,
   StatusBar,
@@ -11,18 +9,24 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
+import { useState, useEffect } from "react";
+
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
 } from "firebase/auth";
 import { auth } from "../../FirebaseConfig";
-import { router } from "expo-router";
-import AuthTabs from "../components/AuthTabs";
-import { MaterialIcons } from "@expo/vector-icons";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../FirebaseConfig";
+
+import { router } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { MaterialIcons } from "@expo/vector-icons";
+
+import AuthTabs from "../components/AuthTabs";
+import FormInput from "../components/FormInput";
+import { ROUTES } from "../constants/routes";
 
 // Authentication screen for parents
 export default function AuthScreen() {
@@ -32,9 +36,6 @@ export default function AuthScreen() {
   const [email, setEmail] = useState(""); // State for email input
   const [password, setPassword] = useState(""); // State for password input
   const [confirmPassword, setConfirmPassword] = useState(""); // State for confirm password input (signup only)
-
-  const [showPassword, setShowPassword] = useState(false); // State for showing/hiding password
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State for showing/hiding confirm password (signup only)
 
   const [error, setError] = useState(""); // State for error message
 
@@ -81,7 +82,7 @@ export default function AuthScreen() {
       if (activeTab === "login") {
         // Login logic (for existing users)
         await signInWithEmailAndPassword(auth, email, password);
-        router.push("/"); // Navigate to home screen
+        router.push(ROUTES.HOME); // Navigate to home screen
       } else {
         // Signup logic (for new users)
         const parentsRef = collection(db, "parents");
@@ -96,9 +97,9 @@ export default function AuthScreen() {
 
         // Creating new account (if email exists in parents collection)
         await createUserWithEmailAndPassword(auth, email, password);
-        router.replace("/"); // Navigate to home screen
+        router.push(ROUTES.HOME); // Navigate to home screen
       }
-    } catch (err) {
+    } catch (err: any) {
       // Set appropriate error message
       setError(
         activeTab === "login"
@@ -143,7 +144,7 @@ export default function AuthScreen() {
           </View>
 
           {/* Authentication Tabs (Login/Signup) */}
-          <AuthTabs onTabChange={(tab) => setActiveTab(tab)} />
+          <AuthTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
           {/* Error Message (if any error occurs) */}
           {error && (
@@ -153,36 +154,22 @@ export default function AuthScreen() {
           {/* Form Input */}
           <View className="w-full mb-4">
             {/* Email Input Field */}
-            <View className="w-full bg-gray-100 p-3 rounded-lg mb-4">
-              <TextInput
-                className="text-base text-text"
-                placeholder="Email"
-                placeholderTextColor="#4c516d"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-            </View>
+            <FormInput
+              placeholder="Email"
+              value={email}
+              onChangeText={(text) => setEmail(text)}
+              iconName="email"
+              keyboardType="email-address"
+            />
 
             {/* Password Input with visibility toggle */}
-            <View className="w-full bg-gray-100 p-3 rounded-lg mb-2 flex-row items-center">
-              <TextInput
-                className="flex-1 text-base text-text"
-                placeholder="Password"
-                placeholderTextColor="#4c516d"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!showPassword}
-              />
-              <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                <MaterialIcons
-                  name={showPassword ? "visibility-off" : "visibility"}
-                  size={24}
-                  color="#4c516d"
-                />
-              </TouchableOpacity>
-            </View>
+            <FormInput
+              placeholder="Password"
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+              showPassword
+              iconName="lock"
+            />
 
             {/* Forgot Password link (visible only in login tab) */}
             {activeTab === "login" && (
@@ -198,25 +185,13 @@ export default function AuthScreen() {
 
             {/* Confirm Password Field (for signup only) */}
             {activeTab === "signup" && (
-              <View className="w-full bg-gray-100 p-3 rounded-lg mb-4 flex-row items-center">
-                <TextInput
-                  className="flex-1 text-base text-text"
-                  placeholder="Confirm Password"
-                  placeholderTextColor="#4c516d"
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                  secureTextEntry={!showConfirmPassword}
-                />
-                <TouchableOpacity
-                  onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  <MaterialIcons
-                    name={showConfirmPassword ? "visibility-off" : "visibility"}
-                    size={24}
-                    color="#4c516d"
-                  />
-                </TouchableOpacity>
-              </View>
+              <FormInput
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChangeText={(text) => setConfirmPassword(text)}
+                showPassword
+                iconName="lock"
+              />
             )}
           </View>
 
@@ -239,7 +214,10 @@ export default function AuthScreen() {
                 color="#3b82f6"
                 style={{ opacity: 0.6 }}
               />
-              <Text className="text-sm text-gray-500" style={{ opacity: 0.6 }}>
+              <Text
+                className="text-sm text-gray-500"
+                style={{ opacity: 0.6, maxWidth: "95%" }}
+              >
                 Please use the same email address you used to register your
                 child.
               </Text>
