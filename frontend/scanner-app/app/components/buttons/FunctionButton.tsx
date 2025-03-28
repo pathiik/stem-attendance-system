@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { router } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
+import { ROUTES } from "@/app/constants/routes";
 
 // FunctionButton component props with specific types
 interface FunctionButtonProps {
@@ -25,7 +26,7 @@ export default function FunctionButton({
       onPress={() => {
         // Navigate to the ScanScreen with the specific action ("sign-in" or "sign-out") and cameraFace ("back" or "front")
         router.push({
-          pathname: "../screens/ScanScreen",
+          pathname: ROUTES.SCAN_SCREEN,
           params: { action, cameraFace },
         });
       }}

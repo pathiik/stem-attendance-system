@@ -1,6 +1,6 @@
 # STEM ATTENDANCE APP (SCANNER)
 
-The Attendance App (for scanner) is a mobile application designed for teachers or authorized indivuals to scan student QR codes and mark attendance. Built using **Expo** and **React Native**, the app integrates with **Firebase** for real-time database management. It provides a seamless and efficient way update student attendance status using QR Codes (or Student ID).
+**_STEM Scanner_** is a mobile application designed for teachers or authorized indivuals to scan student QR codes and mark attendance. Built using **Expo** and **React Native**, the app integrates with **Firebase** for real-time database management. It provides a seamless and efficient way update student attendance status using QR Codes (or Student ID).
 
 ![React Native](https://img.shields.io/badge/React_Native-61DAFB?logo=react&logoColor=white)
 ![Expo](https://img.shields.io/badge/Expo-000020?logo=expo&logoColor=white)
@@ -12,7 +12,7 @@ The Attendance App (for scanner) is a mobile application designed for teachers o
   <img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" width="100%"/>
 </div>
 
-## ✨ Key Features
+## 🌟 Key Features
 
 | Feature                        | Description                            |
 | ------------------------------ | -------------------------------------- |
@@ -20,8 +20,28 @@ The Attendance App (for scanner) is a mobile application designed for teachers o
 | **Dynamic Greetings 🌍**       | Greetings in 3 languages based on time |
 | **Real-Time Updates 🔄**       | Sync attendance data instantly         |
 | **Beautiful UI 🎨**            | Modern design with Tailwind CSS        |
+| **Reusable Components ♻️**     | Modular components for easy reuse      |
 
----
+## 📊 Attendance Workflow
+
+```mermaid
+graph TD
+    A[Scan QR/Enter ID] --> B{Verify Student}
+    B -->|Valid| C[Check Current Status]
+    B -->|Invalid| D[Show Error]
+    C -->|Present| E[Sign-Out Action]
+    C -->|Absent| F[Sign-In Action]
+    E --> G[Update to Absent]
+    F --> H[Update to Present]
+```
+
+## ✨ Feature Highlights
+
+| Feature                   | Description                                                                 |
+| ------------------------- | --------------------------------------------------------------------------- |
+| **Dual Input Methods**    | Scan QR codes or manually enter student IDs                                 |
+| **Smart Status Toggling** | Auto-toggles between Present/Absent based on current status and action type |
+| **Real-Time Validation**  | Instant verification against Firebase database                              |
 
 ## 🧰 Tech Stack
 
@@ -86,7 +106,12 @@ npm install @react-navigation/native @react-navigation/core react-native-screens
 │── .expo/                   # Expo development files 🛠️
 │── app/                     # Main application code
 │   ├── components/          # Reuasble react components (e.g. buttons, modals) 🧩
-│   ├── screens/             # Application screens (e.g. ScanScreen) 🖥️
+│   │    ├── buttons/        # Custom buttons (e.g. FunctionButtons, etc.) 🛍️
+│   │    ├── modals/         # Modal components (e.g. MenuModal, StudentIDModal, etc.) 📦
+│   │    └── ui/             # UI components (e.g. Header, CameraOverlay, etc.) 🎨
+│   ├── constants/           # Application constants (e.g. routes, greetings) 📊
+│   ├── hooks/               # Custom hooks (e.g. useCamera, useQRScanner, etc.) 🎣
+│   ├── screens/             # Application screens (e.g. HomeScreen, ScanScreen) 🖥️
 │   ├── globals.css          # Tailwind CSS global styles 🎨
 │   ├── _layout.tsx          # Root layout and navigation setup 🌐
 │   └── index.tsx            # Main entry point ⚡
@@ -100,6 +125,34 @@ npm install @react-navigation/native @react-navigation/core react-native-screens
 │── tailwind.config.js       # Tailwind CSS configuration 🎨
 ```
 
+## 🔄 Attendance Logic Flow
+
+### QR Code Processing
+
+```mermaid
+sequenceDiagram
+    User->>Scanner: Scan QR Code
+    Scanner->>Firebase: Decode Student ID
+    Firebase-->>Scanner: Return Student Data
+    Scanner->>Firebase: Check Current Status
+    alt Status = "Absent"
+        Scanner->>Firebase: Update to "Present"
+    else Status = "Present"
+        Scanner->>Firebase: Update to "Absent"
+    end
+```
+
+### Manual ID Processing
+
+```mermaid
+flowchart LR
+    A[Enter ID] --> B{Exists in Firebase?}
+    B -->|Yes| C[Get Current Status]
+    B -->|No| D[Show Invalid ID Error]
+    C -->|Absent| E[Mark Present]
+    C -->|Present| F[Mark Absent]
+```
+
 ## 🛠️ Installation & Setup
 
 ### 1️⃣ Prerequisites
@@ -111,6 +164,9 @@ Before starting, ensure you have the following installed:
   ```bash
   npm install -g expo-cli
   ```
+
+````
+
 - **Firebase Project** ➜ Create one at [Firebase Console](https://console.firebase.google.com/)
 
 ### 2️⃣ Install Dependencies
@@ -169,3 +225,4 @@ npx expo start
 - 📷 Ensure the device has a working camera for QR code scanning.
 - 🔥 Firebase configuration is required for database functionality.
 - 📱 The app is optimized for both **Android** and **iOS** platforms.
+````
