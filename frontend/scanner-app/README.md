@@ -165,8 +165,6 @@ Before starting, ensure you have the following installed:
   npm install -g expo-cli
   ```
 
-````
-
 - **Firebase Project** ➜ Create one at [Firebase Console](https://console.firebase.google.com/)
 
 ### 2️⃣ Install Dependencies
@@ -225,4 +223,3 @@ npx expo start
 - 📷 Ensure the device has a working camera for QR code scanning.
 - 🔥 Firebase configuration is required for database functionality.
 - 📱 The app is optimized for both **Android** and **iOS** platforms.
-````
