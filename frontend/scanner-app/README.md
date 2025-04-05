@@ -161,6 +161,7 @@ Before starting, ensure you have the following installed:
 
 - **Node.js** (Recommended: LTS version) ➜ Download here: [Node.js](https://nodejs.org/)
 - **Expo CLI** ➜ Install globally using:
+
   ```bash
   npm install -g expo-cli
   ```
@@ -183,7 +184,7 @@ npm install nativewind tailwindcss react-native-safe-area-context react-native-r
 
 ### 3️⃣ Firebase Setup
 
-1. Create a **FirebaseConfig.js** file inside the `scanner-app` if it doesn't exist.
+1. Create a **FirebaseConfig.ts** file inside the `scanner-app` if it doesn't exist.
 2. Add your Firebase configuration:
 
 ```ts
