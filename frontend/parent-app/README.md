@@ -93,9 +93,10 @@ graph LR
 | `expo-linear-gradient`           | Gradient backgrounds      |
 | `react-native-modal`             | Custom Modal Support      |
 | `@expo/vector-icons`             | Icon support              |
+| `react-native-dropdown-picker`   | Dropdown Support          |
 
 ```bash
-npm install nativewind tailwind react-native-safe-area-context expo-linear-gradient react-native-modal @expo/vector-icons
+npm install nativewind tailwind react-native-safe-area-context expo-linear-gradient react-native-modal @expo/vector-icons react-native-dropdown-picker
 ```
 
 ## 📂 Folder Structure
@@ -154,7 +155,7 @@ npm install
 Install additional dependencies:
 
 ```bash
-npm install nativewind tailwindcss react-native-safe-area-context react-native-reanimated expo-linear-gradient firebase
+npm install nativewind tailwindcss react-native-safe-area-context react-native-reanimated expo-linear-gradient firebase react-native-dropdown-picker
 ```
 
 ### 3️⃣ Firebase Setup

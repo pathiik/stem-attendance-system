@@ -19,6 +19,7 @@ import { doc, getDoc } from "firebase/firestore";
 
 import { formatDate, formatPhone } from "../utils/formatters";
 import ContactInfoCard from "../components/ContactInfoCard";
+import ReportIssueModal from "../components/ReportIssueModal";
 
 // Student Details Screen
 export default function StudentDetailsScreen() {
@@ -31,6 +32,7 @@ export default function StudentDetailsScreen() {
   const [qrCode, setQrCode] = useState(""); // State for storing QR Code URL
 
   const [showMenu, setShowMenu] = useState(false); // State for showing/hiding three-dot menu
+  const [showReportModal, setShowReportModal] = useState(false); // State for showing/hiding report modal
 
   // Fetches QR Code from Firestore when Show QR Code button is pressed and showQRCode state is true
   useEffect(() => {
@@ -57,28 +59,10 @@ export default function StudentDetailsScreen() {
     }
   }, [showQRCode]);
 
-  // Function to handle reporting an issue (currently just an alert)
-  const handleReportIssue = () => {
+  // Function to show the report modal
+  const handleOpenReportModal = () => {
     setShowMenu(false);
-    Alert.alert(
-      "Report Issue",
-      "Would you like to report an issue with the student's information?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Report Issue",
-          onPress: () => {
-            Alert.alert(
-              "Issue Reported",
-              "The issue has been reported successfully."
-            );
-          },
-        },
-      ]
-    );
+    setShowReportModal(true);
   };
 
   return (
@@ -246,10 +230,7 @@ export default function StudentDetailsScreen() {
           <View className="absolute right-9 top-12 bg-white shadow-2xl rounded-lg px-6 py-4 z-20">
             <TouchableOpacity
               className="flex-row items-center justify-center gap-2"
-              onPress={() => {
-                setShowMenu(false);
-                handleReportIssue();
-              }}
+              onPress={handleOpenReportModal}
             >
               <Octicons name="report" size={18} color="#1d2951" />
               <Text className="text-primary ml-2 font-bold">Report Issue</Text>
@@ -287,6 +268,15 @@ export default function StudentDetailsScreen() {
           )}
         </View>
       </Modal>
+
+      {/* Report Issue Modal */}
+      <ReportIssueModal
+        isVisible={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        studentName={studentDetails.name}
+        parentName={studentDetails.parent_name}
+        parentEmail={studentDetails.parent_email}
+      />
     </View>
   );
 }
