@@ -83,7 +83,7 @@ export default function ReportIssueModal({
         student_name: studentName,
         sender_name: parentName,
         sender_email: parentEmail,
-        status: "pending",
+        status: "unread",
         created_at: serverTimestamp(),
       });
 
