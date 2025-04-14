@@ -49,12 +49,14 @@ The Admin Dashboard is a web application designed for administrators to manage s
 ├── public/                # Static assets 🖼️
 ├── src/
 │   ├── components/        # Reusable UI 🧩
+│   ├── firebase/          # Firebase configuration 🔥
 │   ├── hooks/             # Custom hooks 🔗
 │   ├── pages/
 │   │   └── Auth/          # Authentication page 🔐
 │   ├── App.jsx            # Root component 📦
 │   ├── index.css          # Global styles 🎨
 │   └── main.jsx           # Entry point for React 🔑
+├── .env                   # Environment variables 🌍
 │── .gitignore             # Files and folders to ignore in Git 🚫
 ├── index.html             # Main HTML file 🏠
 ├── package.json           # Project metadata and dependencies 📜
