@@ -151,7 +151,9 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider value={value}>
       {loading ? (
         // Needs to be updated with a loading animation (in-progress)
-        <div>Loading...</div>
+        <div className="flex items-center justify-center min-h-screen">
+          Loading...
+        </div>
       ) : (
         children
       )}
