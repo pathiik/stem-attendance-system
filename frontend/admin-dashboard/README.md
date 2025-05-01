@@ -40,6 +40,12 @@ The Admin Dashboard is a web application designed for administrators to manage s
 | ------------- | --------------------------- |
 | `tailwindcss` | Utility-first CSS framework |
 | `react-icons` | Icon library                |
+| `PropTypes`   | Type checking for props     |
+
+```bash
+npm install -D tailwindcss@3 postcss autoprefixer
+npm install react-icons prop-types
+```
 
 ## 📂 Folder Structure
 
@@ -50,7 +56,7 @@ The Admin Dashboard is a web application designed for administrators to manage s
 ├── src/
 │   ├── components/        # Reusable UI 🧩
 │   ├── firebase/          # Firebase configuration 🔥
-│   ├── hooks/             # Custom hooks 🔗
+│   ├── context/           # Context API for state management 📦
 │   ├── pages/
 │   │   └── Auth/          # Authentication page 🔐
 │   ├── App.jsx            # Root component 📦
@@ -60,7 +66,9 @@ The Admin Dashboard is a web application designed for administrators to manage s
 │── .gitignore             # Files and folders to ignore in Git 🚫
 ├── index.html             # Main HTML file 🏠
 ├── package.json           # Project metadata and dependencies 📜
+├── postcss.config.js      # PostCSS configuration file ⚙️
 ├── README.md              # Project documentation 📖
+├── tailwind.config.js     # Tailwind CSS configuration file ⚙️
 └── vite.config.js         # Vite configuration file ⚙️
 ```
 
@@ -79,6 +87,13 @@ Navigate to the `admin-dashboard` folder and install the required dependencies:
 
 ```bash
 npm install
+```
+
+Install additional dependencies:
+
+```bash
+npm install -D tailwindcss@3 postcss autoprefixer
+npm install react-icons prop-types
 ```
 
 ### 3️⃣ Start the App
