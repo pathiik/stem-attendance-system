@@ -1,10 +1,12 @@
 import PropTypes from "prop-types";
+
 import { IoWarningOutline } from "react-icons/io5";
 import { FiAlertTriangle } from "react-icons/fi";
 
 import PrimaryButton from "../buttons/PrimaryButton";
 import SecondaryButton from "../buttons/SecondaryButton";
 
+// ConfirmationModal - A reusable modal dialog for confirming actions
 export default function ConfirmationModal({
   title,
   message,
@@ -16,21 +18,23 @@ export default function ConfirmationModal({
   isOpen = true,
   icon,
 }) {
-  if (!isOpen) return null; // If the modal is not open, return null
+  if (!isOpen) return null; // Early return if the modal is closed
 
+  // Determine which icon to use based on props
   const IconComponent =
-    icon || (destructive ? FiAlertTriangle : IoWarningOutline); // Default icon based on the destructive prop
+    icon || (destructive ? FiAlertTriangle : IoWarningOutline);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
         <div className="flex flex-col space-y-4">
-          {/* Icon and Title Row */}
+          {/* Header with icon and title */}
           <div className="flex items-start space-x-3">
             <div
               className={`flex-shrink-0 pt-0.5 ${
                 destructive ? "text-red-600" : "text-primary"
               }`}
+              aria-hidden="true" // Hide from screen readers as title contains the same info
             >
               <IconComponent size={24} />
             </div>
@@ -45,7 +49,7 @@ export default function ConfirmationModal({
             </div>
           </div>
 
-          {/* Message */}
+          {/* Modal content */}
           <div className="ml-9 -mt-2">
             {" "}
             {/* Adjusted margin to align with title */}

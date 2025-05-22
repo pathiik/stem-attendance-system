@@ -1,8 +1,11 @@
 import { Link } from "react-router-dom";
-import Logo from "../components/common/Logo";
+
 import { FiArrowLeft, FiFrown } from "react-icons/fi";
+
+import Logo from "../components/common/Logo";
 import PrimaryButton from "../components/common/buttons/PrimaryButton";
 
+// Error404Page component - Displays a 404 error page when a page is not found
 export default function Error404Page() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">

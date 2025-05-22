@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 
+// SecondaryButton - A styled button component for secondary actions
 export default function SecondaryButton({
   children,
   onClick,
@@ -26,6 +27,7 @@ export default function SecondaryButton({
         disabled:opacity-70 disabled:cursor-not-allowed
         ${className}
       `}
+      aria-disabled={disabled} // Accessibility: Indicates if the button is disabled
     >
       {children}
     </button>

@@ -1,20 +1,25 @@
 import { useEffect, useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { replace, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+
 import AuthContainer from "../../components/auth/AuthContainer";
 import AuthTabs from "../../components/auth/AuthTabs";
 import FormInput from "../../components/auth/FormInput";
 
+// AuthPage - Main authentication page component handling both login and signup
 export default function AuthPage() {
   const [activeTab, setActiveTab] = useState("login"); // State for active tab (login/signup)
+
   // State for form data (email, password, confirm password)
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     confirmPassword: "", // Only used for signup
   });
-  const [error, setError] = useState(""); // State for error messages
-  const [loading, setLoading] = useState(false); // State for loading status
+
+  // States for error messages and loading status
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const { login, signup, getUserFriendlyError } = useAuth(); // Auth context methods
   const navigate = useNavigate(); // Hook for navigation
@@ -27,25 +32,27 @@ export default function AuthPage() {
     }
   }, [error]);
 
+  // Handle input changes
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value })); // Update form data state
+    if (error) setError(""); // Clear error when user starts typing
   };
 
-  // Function to handle form validation
+  // Form validation logic
   const validateForm = useCallback(() => {
-    // Check if email has "@" symbol
+    // Email validation (simple check for '@' symbol)
     if (!formData.email.includes("@")) {
       setError("Please enter a valid email address.");
       return false;
     }
 
-    // Check if password is less than 8 characters
+    // Password validation (length check)
     if (formData.password.length < 8) {
       setError("Password must be at least 8 characters long.");
       return false;
     }
 
-    // Check if password and confirm password match (only for signup)
+    // Password confirmation validation (only for signup)
     if (
       activeTab === "signup" &&
       formData.password !== formData.confirmPassword
@@ -57,6 +64,7 @@ export default function AuthPage() {
     return true;
   }, [formData, activeTab]);
 
+  // Handle form submission
   const handleSubmit = useCallback(
     async (e) => {
       e.preventDefault(); // Prevent default form submission
@@ -64,14 +72,19 @@ export default function AuthPage() {
       setError("");
 
       try {
-        if (!validateForm()) return; // Validate form before submission
+        // Validate form before submission
+        if (!validateForm()) {
+          setLoading(false);
+          return;
+        }
 
+        // Execute appropriate auth action based on active tab
         if (activeTab === "signup") {
-          await signup(formData.email, formData.password); // Call signup method
-          navigate("/"); // Navigate to home page after signup
+          await signup(formData.email, formData.password);
+          navigate("/", { replace: true }); // Replace history entry after signup
         } else {
           await login(formData.email, formData.password); // Call login method
-          navigate("/"); // Navigate to home page after login
+          navigate("/", { replace: true }); // Replace history entry after login
         }
       } catch (error) {
         setError(getUserFriendlyError(error)); // Set error message from auth context
@@ -90,6 +103,7 @@ export default function AuthPage() {
     ]
   );
 
+  // Handle tab switch
   const switchTab = (tab) => {
     setActiveTab(tab); // Switch between login and signup tabs
     setError("");
@@ -102,6 +116,7 @@ export default function AuthPage() {
 
   return (
     <AuthContainer title="Attendance System" subtitle="Admin Dashboard">
+      {/* Header section with dynamic content based on active tab */}
       <div className="text-center md:text-left mb-8">
         <h2 className="text-2xl font-bold text-gray-800">
           {activeTab === "login" ? "Welcome Back" : "Create Your Account"}
@@ -113,15 +128,22 @@ export default function AuthPage() {
         </p>
       </div>
 
+      {/* Tab Navigation component */}
       <AuthTabs activeTab={activeTab} onTabChange={switchTab} />
 
+      {/* Error message display */}
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
+        <div
+          className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 rounded"
+          role="alert" // Accessibility role for alert
+        >
           {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Main form */}
+      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+        {/* Email input field */}
         <FormInput
           type="email"
           placeholder="Email Address"
@@ -132,6 +154,7 @@ export default function AuthPage() {
           autoComplete="email"
         />
 
+        {/* Password input field */}
         <FormInput
           type="password"
           placeholder="Password"
@@ -139,24 +162,28 @@ export default function AuthPage() {
           onChange={(e) => handleInputChange("password", e.target.value)}
           icon="lock"
           required
-          minLength={6}
+          minLength={8}
           autoComplete={
             activeTab === "login" ? "current-password" : "new-password"
           }
+          aria-label="Password"
         />
 
+        {/* Forgot password link (login only) */}
         {activeTab === "login" && (
           <div className="text-right">
             <button
               type="button"
-              onClick={() => alert("Password reset functionality coming soon!")}
+              onClick={() => alert("Password reset functionality coming soon!")} // Placeholder for password reset functionality
               className="text-primary hover:underline text-sm focus:outline-none"
+              aria-label="Forgot Password" // Accessibility label for button
             >
               Forgot Password?
             </button>
           </div>
         )}
 
+        {/* Confirm password field (signup only) */}
         {activeTab === "signup" && (
           <FormInput
             type="password"
@@ -167,17 +194,20 @@ export default function AuthPage() {
             }
             icon="lock"
             required
-            minLength={6}
+            minLength={8}
             autoComplete="new-password"
+            aria-label="Confirm Password" // Accessibility label for input
           />
         )}
 
+        {/* Submit button */}
         <button
           type="submit"
           disabled={loading}
           className={`w-full bg-primary text-white py-3 px-4 rounded-lg hover:bg-opacity-90 transition ${
             loading ? "opacity-70 cursor-not-allowed" : ""
           }`}
+          aria-busy={loading} // Accessibility attribute indicating loading state
         >
           {loading
             ? "Processing..."
@@ -186,6 +216,7 @@ export default function AuthPage() {
             : "Sign Up"}
         </button>
 
+        {/* Switch between login and signup */}
         <div className="mt-6 text-center">
           <p className="text-gray-600">
             {activeTab === "login" ? (

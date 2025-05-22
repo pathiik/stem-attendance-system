@@ -1,22 +1,27 @@
 import { Component } from "react";
 import PropTypes from "prop-types";
 
+// ErrorBoundary - Catches JavaScript errors in its child component tree and displays a fallback UI
 export default class ErrorBoundary extends Component {
-  state = { hasError: false }; // Initialize state to track if an error has occurred
+  state = { hasError: false }; // State to track if an error has occurred
 
+  // Updates state when an error is caught
   static getDerivedStateFromError() {
-    // Update state to indicate an error has occurred
     return { hasError: true };
   }
 
+  // Error handling lifecycle method
   componentDidCatch(error, errorInfo) {
-    // Log the error to an error reporting service
     console.error("Error caught in ErrorBoundary:", error, errorInfo);
   }
 
   render() {
     // Render fallback UI if an error has occurred, otherwise render children
-    return this.state.hasError ? this.props.fallback : this.props.children;
+    return this.state.hasError ? (
+      <div className="p-4 bg-red-500 rounded">{this.props.fallback}</div>
+    ) : (
+      this.props.children
+    );
   }
 }
 
@@ -28,5 +33,11 @@ ErrorBoundary.propTypes = {
 
 // Default props for ErrorBoundary component
 ErrorBoundary.defaultProps = {
-  fallback: <div>Something went wrong.</div>, // Default fallback UI
+  fallback: (
+    <div className="p-4 bg-red-500 rounded">
+      <h2 className="text-lg font-semibold text-white">Error</h2>
+      Something went wrong. Please refresh the page or contact support if the
+      problem persists.
+    </div>
+  ), // Default fallback UI
 };

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
 import { useLocation, useNavigate } from "react-router-dom";
+
 import {
   FiHome,
   FiUsers,
@@ -10,12 +11,13 @@ import {
   FiSettings,
   FiLogOut,
 } from "react-icons/fi";
+
 import { useAuth } from "../../context/AuthContext";
 import Logo from "../common/Logo";
 import NavItem from "../common/NavItem";
 import ConfirmationModal from "../common/modals/ConfirmationModal";
 
-// Navigation items for the sidebar
+// Navigation items configuration
 const NAV_ITEMS = [
   { path: "/", icon: <FiHome size={20} />, label: "Dashboard" },
   { path: "/students", icon: <FiUsers size={20} />, label: "Students" },
@@ -32,30 +34,31 @@ export default function Sidebar({ isOpen, onClose }) {
   const navigate = useNavigate(); // Get the navigate function from React Router
   const [showLogoutModal, setShowLogoutModal] = useState(false); // State to control the visibility of the logout modal
 
-  // Handle click event on logout button
+  // Handles the logout confirmation
   const handleConfirmLogout = async () => {
     try {
-      await logout(); // Call the logout function
+      await logout(); // Execute logout
       navigate("/auth"); // Redirect to the authentication page after logout
     } catch (error) {
-      console.error("Logout failed:", error); // Log any errors that occur during logout
+      console.error("Logout failed:", error);
     } finally {
-      setShowLogoutModal(false); // Close the logout modal
+      setShowLogoutModal(false); // Close the logout modal regardless of outcome
     }
   };
 
   // Show the logout confirmation modal
   const promptLogout = () => {
-    setShowLogoutModal(true); // Show the logout confirmation modal
+    setShowLogoutModal(true);
   };
 
   // Close the logout confirmation modal
   const cancelLogout = () => {
-    setShowLogoutModal(false); // Close the logout confirmation modal
+    setShowLogoutModal(false);
   };
 
   return (
     <>
+      {/* Overlay for mobile (visible when sidebar is open) */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
@@ -98,7 +101,7 @@ export default function Sidebar({ isOpen, onClose }) {
         </nav>
 
         {/* Logout button */}
-        <div className="absolute bottom-0 w-full p-4 border-t border-gray-200">
+        <div className="absolute bottom-0 w-full p-4 bg-white border-t border-gray-200">
           <button
             className="flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 w-full transition-colors"
             onClick={promptLogout}

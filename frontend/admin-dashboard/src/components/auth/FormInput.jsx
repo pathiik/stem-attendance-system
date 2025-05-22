@@ -2,11 +2,10 @@ import { useCallback, useState } from "react";
 import { FiMail, FiLock, FiX, FiEye, FiEyeOff } from "react-icons/fi";
 import PropTypes from "prop-types";
 
-// Function to return the appropriate icon based on the type of input
+// Returns the appropriate icon component based on input type
 const getIcon = (icon, isFocused) => {
-  const iconClass = `${isFocused ? "text-primary" : "text-gray-400"}`; // Dynamic class for icon color
+  const iconClass = `${isFocused ? "text-primary" : "text-gray-400"}`;
 
-  // Return the icon based on the type prop
   switch (icon) {
     case "email":
       return <FiMail className={iconClass} />;
@@ -17,7 +16,7 @@ const getIcon = (icon, isFocused) => {
   }
 };
 
-// FormInput - Input component for authentication forms
+// FormInput - Reusable input component with validation, icons, and accessibility features
 export default function FormInput({
   type = "text",
   placeholder,
@@ -36,39 +35,41 @@ export default function FormInput({
   const [isFocused, setIsFocused] = useState(false); // State to track if the input is focused
   const [isValid, setIsValid] = useState(true); // State to track if the input is valid
 
-  // Function to validate the input value
+  // Validates the input value against the provided regex pattern
   const handleValidation = useCallback(
     (e) => {
-      if (pattern) setIsValid(new RegExp(pattern).test(e.target.value));
+      if (pattern) {
+        setIsValid(new RegExp(pattern).test(e.target.value));
+      }
     },
     [pattern]
   );
 
-  // Function to handle input changes
+  // Handles input changes and validation
   const handleChange = (e) => {
     onChange(e);
-    if (pattern) handleValidation(e); // Validate the input if a pattern is provided
+    if (pattern) handleValidation(e);
   };
 
   return (
     <div className={`relative mb-4 ${className}`}>
-      {/* Left Icon */}
+      {/* Left-side icon */}
       {icon && (
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           {getIcon(icon, isFocused)}
         </div>
       )}
 
-      {/* Input Field */}
+      {/* Main input field */}
       <input
         type={type === "password" && showPassword ? "text" : type}
         placeholder={placeholder}
         value={value}
         onChange={handleChange}
-        onFocus={() => setIsFocused(true)} // Set focused state to true on focus
+        onFocus={() => setIsFocused(true)}
         onBlur={(e) => {
-          setIsFocused(false); // Set focused state to false on blur
-          handleValidation(e); // Validate the input on blur
+          setIsFocused(false);
+          handleValidation(e);
         }}
         disabled={disabled}
         className={`w-full py-3 ${icon ? "pl-10" : "pl-4"} ${
@@ -86,10 +87,10 @@ export default function FormInput({
         aria-invalid={!!error || !isValid} // Indicates if the input is invalid
         aria-describedby={error ? "error-message" : undefined} // Describes the error message
         aria-required={required ? "true" : "false"} // Indicates if the input is required
-        {...props} // Spread any additional props
+        {...props}
       />
 
-      {/* Right Buttons */}
+      {/* Right-side controls */}
       <div className="absolute inset-y-0 right-0 flex items-center pr-3 space-x-1">
         {/* Password visibilty toggle */}
         {type === "password" && (
@@ -108,7 +109,7 @@ export default function FormInput({
           </button>
         )}
 
-        {/* Clear button (for non-password fields) */}
+        {/* Clear input button */}
         {type !== "password" && value && (
           <button
             type="button"
@@ -122,7 +123,7 @@ export default function FormInput({
         )}
       </div>
 
-      {/* Error Message */}
+      {/* Error message display */}
       {error && (
         <p
           id="error-message"
@@ -133,7 +134,7 @@ export default function FormInput({
         </p>
       )}
 
-      {/* Character counter */}
+      {/* Character counter (when max length is specified) */}
       {maxLength && (
         <p className="mt-1 text-xs text-gray-500 text-right">
           {value.length}/{maxLength}

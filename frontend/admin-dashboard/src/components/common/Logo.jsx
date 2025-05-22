@@ -6,6 +6,7 @@ const LOGO_PATHS = {
   dark: "/assets/stem-logo-dark.png",
 };
 
+// Logo component that displays either a light or a dark version of the logo
 export default function Logo({
   lightMode = false,
   className = "",
@@ -15,7 +16,7 @@ export default function Logo({
   const [logoError, setLogoError] = useState(false); // State to track logo loading error
   const [isLoading, setIsLoading] = useState(true); // State to track logo loading status
 
-  // Function to handle logo error
+  // Handles image loading error
   const handleImageError = () => {
     setIsLoading(false);
     setLogoError(true);
@@ -28,7 +29,7 @@ export default function Logo({
     }
   };
 
-  // Fallback UI if logo error occurs
+  // Returns fallback UI if logo fails to load
   if (logoError) {
     return (
       <div
@@ -42,7 +43,7 @@ export default function Logo({
 
   return (
     <div>
-      {/* Loading Skeleton */}
+      {/* Loading skeleton shown while image is loading */}
       {isLoading && (
         <div
           className={`${className} animate-pulse bg-gray-200 rounded`}
@@ -66,7 +67,7 @@ export default function Logo({
   );
 }
 
-// Prop Types for Logo
+// Prop types for Logo
 Logo.propTypes = {
   lightMode: PropTypes.bool, // Whether to use light mode logo
   className: PropTypes.string, // Additional CSS classes for the logo
@@ -74,6 +75,7 @@ Logo.propTypes = {
   fallbackText: PropTypes.string, // Fallback text if logo fails to load
 };
 
+// Default props for Logo
 Logo.defaultProps = {
   lightMode: false,
   className: "",

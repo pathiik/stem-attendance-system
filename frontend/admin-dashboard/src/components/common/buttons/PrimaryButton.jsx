@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 
+// PrimaryButton - A styled button component for primary actions
 export default function PrimaryButton({
   children,
   onClick,
@@ -26,6 +27,7 @@ export default function PrimaryButton({
         disabled:opacity-70 disabled:cursor-not-allowed
         ${className}
       `}
+      aria-disabled={disabled} // Accessibility: Indicates if the button is disabled
     >
       {children}
     </button>

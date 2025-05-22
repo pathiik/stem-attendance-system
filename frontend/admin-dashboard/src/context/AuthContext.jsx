@@ -15,20 +15,24 @@ import {
   // To be added in the future (updateEmail, updatePassword)
 } from "firebase/auth";
 
+import Spinner from "../components/ui/Spinner";
+
+// Create authentication context
 const AuthContext = createContext();
 
+// AuthProvider - Context provider for authentication operations
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null); // Current user state
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // Error state
 
-  // Function to clear error messages after a delay of 5 seconds
+  // Clear error messages after a delay of 5 seconds
   const clearError = useCallback(() => {
     const timer = setTimeout(() => setError(null), 5000);
     return () => clearTimeout(timer);
   }, []);
 
-  // Function to return user-friendly error messages based on error codes
+  // Get user-friendly error messages based on error codes
   const getUserFriendlyError = useCallback((error) => {
     const errorCode = error.code || error; // Extracting error code
 
@@ -61,7 +65,7 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  // Function to handle new user signup process
+  // Handles user signup with email and password
   const signup = useCallback(
     async (email, password) => {
       try {
@@ -78,7 +82,7 @@ export function AuthProvider({ children }) {
     [clearError, getUserFriendlyError]
   );
 
-  // Function to handle user login process
+  // Handles user login with email and password
   const login = useCallback(
     async (email, password) => {
       try {
@@ -95,7 +99,7 @@ export function AuthProvider({ children }) {
     [clearError, getUserFriendlyError]
   );
 
-  // Function to handle user logout process
+  // Handles user logout
   const logout = useCallback(async () => {
     try {
       setLoading(true); // Set loading state to true
@@ -109,7 +113,7 @@ export function AuthProvider({ children }) {
     }
   }, [clearError, getUserFriendlyError]);
 
-  // Function to handle password reset process
+  // Sends a password reset email to the user
   const resetPassword = useCallback(
     async (email) => {
       try {
@@ -126,7 +130,7 @@ export function AuthProvider({ children }) {
     [clearError, getUserFriendlyError]
   );
 
-  // Auth state listener to update current user state
+  // Subscribe to authentication state changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user); // Update current user state when auth state changes
@@ -136,6 +140,7 @@ export function AuthProvider({ children }) {
     return unsubscribe; // Cleanup subscription on unmount
   }, []);
 
+  // Context value containing authentication methods and state
   const value = {
     currentUser,
     loading,
@@ -150,9 +155,8 @@ export function AuthProvider({ children }) {
   return (
     <AuthContext.Provider value={value}>
       {loading ? (
-        // Needs to be updated with a loading animation (in-progress)
         <div className="flex items-center justify-center min-h-screen">
-          Loading...
+          <Spinner size="lg" />
         </div>
       ) : (
         children
@@ -161,7 +165,7 @@ export function AuthProvider({ children }) {
   );
 }
 
-// Custom hook to use the AuthContext
+// Custom hook to access the AuthContext
 export function useAuth() {
   const context = useContext(AuthContext); // Get the context value
   if (!context) {

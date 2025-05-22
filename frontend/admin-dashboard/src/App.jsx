@@ -5,22 +5,32 @@ import {
   Navigate,
 } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { FirebaseProvider } from "./context/FirebaseContext";
 
+// Page imports
 import AuthPage from "./pages/auth/AuthPage";
 import Layout from "./components/layout/Layout";
+import Dashboard from "./pages/home/Dashboard";
+import Students from "./pages/home/students/Students";
+import StudentDetails from "./pages/home/students/StudentDetails";
+import Teachers from "./pages/home/teachers/Teachers";
+import TeacherDetails from "./pages/home/teachers/TeacherDetails";
+import Messages from "./pages/home/Messages";
+import Tasks from "./pages/home/Tasks";
+import Settings from "./pages/home/Settings";
 import Error404Page from "./pages/Error404Page";
 
-// Function to update the page title
+// Updates the document title dynamically based on the current page
 const updatePageTitle = (title) => {
   document.title = `${title} – STEM`;
   return null;
 };
 
-// ProtectedRoute component to protect routes
+// ProtectedRoute - Wrapper component for routes that require authentication
 const ProtectedRoute = () => {
   const { currentUser, loading } = useAuth(); // Get current user and loading state from AuthContext
 
-  // Redirect to auth page if user is not authenticated
+  // Show loading state while checking authentication
   if (loading) {
     return <div>Loading authentication...</div>;
   }
@@ -34,11 +44,10 @@ const ProtectedRoute = () => {
   );
 };
 
-// AuthRoute component to handle authentication routes
+// AuthRoute - Specific route for authentication
 const AuthRoute = () => {
   const { currentUser, loading } = useAuth(); // Get current user and loading state from AuthContext
 
-  // Redirect to dashboard if user is authenticated
   if (loading) {
     return <div>Loading authentication...</div>;
   }
@@ -50,9 +59,13 @@ const AuthRoute = () => {
   );
 };
 
-// AppWrapper component to wrap the application with AuthProvider
+// AppWrapper - Top-level wrapper for the application
 const AppWrapper = ({ children }) => {
-  return <AuthProvider>{children}</AuthProvider>;
+  return (
+    <AuthProvider>
+      <FirebaseProvider>{children}</FirebaseProvider>
+    </AuthProvider>
+  );
 };
 
 // Router configuration
@@ -62,32 +75,42 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <div>Dashboard – Coming Soon!</div>,
+        element: <Dashboard />,
         loader: () => updatePageTitle("Dashboard"), // Update page title
       },
       {
         path: "/students",
-        element: <div>Students – Coming Soon!</div>,
+        element: <Students />,
         loader: () => updatePageTitle("Students"),
       },
       {
+        path: "/students/:id",
+        element: <StudentDetails />,
+        loader: () => updatePageTitle("Student Details"),
+      },
+      {
         path: "/teachers",
-        element: <div>Teachers – Coming Soon!</div>,
+        element: <Teachers />,
         loader: () => updatePageTitle("Teachers"),
       },
       {
+        path: "/teachers/:id",
+        element: <TeacherDetails />,
+        loader: () => updatePageTitle("Teacher Details"),
+      },
+      {
         path: "/messages",
-        element: <div>Messages – Coming Soon!</div>,
+        element: <Messages />,
         loader: () => updatePageTitle("Messages"),
       },
       {
         path: "/tasks",
-        element: <div>Tasks – Coming Soon!</div>,
+        element: <Tasks />,
         loader: () => updatePageTitle("Tasks"),
       },
       {
         path: "/settings",
-        element: <div>Settings – Coming Soon!</div>,
+        element: <Settings />,
         loader: () => updatePageTitle("Settings"),
       },
     ],

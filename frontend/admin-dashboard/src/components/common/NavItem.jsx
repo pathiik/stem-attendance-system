@@ -12,12 +12,14 @@ export default function NavItem({ item, isActive, onClick }) {
         }`}
         onClick={onClick}
         // Accessibility attributes
-        role="menuitem"
-        aria-current={isActive ? "page" : undefined}
+        role="menuitem" // Indicates that this is a menu item
+        aria-current={isActive ? "page" : undefined} // Indicates the current page for screen readers
       >
+        {/* Icon and label for the navigation item */}
         <span className="mr-3" aria-hidden="true">
           {item.icon}
         </span>
+        {/* Navigation label */}
         <span>{item.label}</span>
       </Link>
     </li>
